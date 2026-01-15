@@ -1,0 +1,199 @@
+import streamlit as st
+import random
+
+# ── App Title & Description ──
+st.title("App Idea Generator Quiz")
+st.markdown("""
+Take this short quiz to discover what kind of app you might enjoy building!  
+We'll ask a few questions about your interests → then suggest personalized app ideas.
+""")
+
+# ── Questions (feel free to add/edit more) ──
+questions = [
+    {
+        "question": "What topic excites you most right now?",
+        "options": [
+            "Games & Fun",
+            "Productivity & Organization",
+            "Social & Communication",
+            "Health & Fitness",
+            "Learning & Education",
+            "Money & Finance",
+            "Creative Tools (art, music, writing)",
+            "Environment / Sustainability"
+        ]
+    },
+    {
+        "question": "What kind of users do you want to help?",
+        "options": [
+            "Myself / personal use",
+            "Friends & family",
+            "Students / learners",
+            "Small business owners",
+            "Gamers",
+            "People who want to be healthier",
+            "Artists & creators",
+            "Everyone (very general)"
+        ]
+    },
+    {
+        "question": "Which best describes your favorite apps to use?",
+        "options": [
+            "Colorful & playful (games, social media)",
+            "Clean & minimal (todo lists, calendars)",
+            "Data-heavy (trackers, analytics)",
+            "Very visual (photo/video editing)",
+            "AI-powered or smart features",
+            "Simple & fast utility tools"
+        ]
+    },
+    {
+        "question": "How much do you like working with...",
+        "options": [
+            "Photos, videos, design",
+            "Text, stories, journaling",
+            "Numbers, budgets, stats",
+            "Maps & location features",
+            "Multiplayer / real-time interaction",
+            "AI / smart suggestions"
+        ]
+    }
+]
+
+# ── Store answers using session state ──
+if "answers" not in st.session_state:
+    st.session_state.answers = []
+if "current_q" not in st.session_state:
+    st.session_state.current_q = 0
+
+# ── Quiz Logic ──
+current = st.session_state.current_q
+
+if current < len(questions):
+    q = questions[current]
+    st.subheader(f"Question {current+1} of {len(questions)}")
+    st.write(q["question"])
+
+    choice = st.radio("Select one:", q["options"], index=None, key=f"q{current}")
+
+    if st.button("Next →") and choice is not None:
+        st.session_state.answers.append(choice)
+        st.session_state.current_q += 1
+        st.rerun()   # refresh to show next question
+
+    if choice is None:
+        st.info("Please select an option to continue.")
+
+else:
+    # ── All questions answered → show results ──
+    st.success("Quiz complete! 🎉 Here's what you might love building...")
+
+    answers = st.session_state.answers
+
+    # Simple scoring / categorization (you can make this much smarter)
+    categories = {
+        "game": 0,
+        "productivity": 0,
+        "social": 0,
+        "health": 0,
+        "education": 0,
+        "finance": 0,
+        "creative": 0,
+        "eco": 0
+    }
+
+    # Very basic mapping — improve this with better logic!
+    if "Games" in answers[0] or "Gamers" in answers[1] or "playful" in answers[2]:
+        categories["game"] += 2
+    if "Productivity" in answers[0] or "Organization" in answers[0] or "todo" in answers[2]:
+        categories["productivity"] += 2
+    if "Social" in answers[0] or "Communication" in answers[0] or "multiplayer" in answers[3]:
+        categories["social"] += 2
+    if "Health" in answers[0] or "Fitness" in answers[0] or "healthier" in answers[1]:
+        categories["health"] += 2
+    if "Learning" in answers[0] or "Education" in answers[0] or "learners" in answers[1]:
+        categories["education"] += 2
+    if "Money" in answers[0] or "Finance" in answers[0] or "budgets" in answers[3]:
+        categories["finance"] += 2
+    if "Creative" in answers[0] or "art" in answers[0] or "visual" in answers[2]:
+        categories["creative"] += 2
+    if "Environment" in answers[0] or "Sustainability" in answers[0]:
+        categories["eco"] += 2
+
+    # Add points from other answers
+    if "AI" in answers[3] or "smart" in answers[2]:
+        for k in categories:
+            categories[k] += 1   # AI can enhance almost anything
+
+    # Find top 2 interests
+    top = sorted(categories.items(), key=lambda x: x[1], reverse=True)[:2]
+
+    st.subheader("Your Top Interests")
+    for cat, score in top:
+        st.write(f"• **{cat.capitalize()}** ({score} points)")
+
+    # ── Generate app ideas based on top categories ──
+    ideas = []
+
+    if "game" in [c[0] for c in top]:
+        ideas.extend([
+            "A simple endless runner game with cute characters",
+            "Trivia battle game with friends (multiplayer)",
+            "Daily mini-puzzle game that teaches a new fact"
+        ])
+    if "productivity" in [c[0] for c in top]:
+        ideas.extend([
+            "Smart habit tracker with reminders & streaks",
+            "Minimalist to-do list with AI-suggested priorities",
+            "Focus timer (Pomodoro) with mood logging"
+        ])
+    if "social" in [c[0] for c in top]:
+        ideas.extend([
+            "Anonymous compliment sender for friends",
+            "Group event planner with polls & calendar sync",
+            "Local hobby meetup finder"
+        ])
+    if "health" in [c[0] for c in top]:
+        ideas.extend([
+            "Water & step tracker with fun animations",
+            "Mood journal + simple CBT prompts",
+            "Quick 5-minute workout randomizer"
+        ])
+    if "education" in [c[0] for c in top]:
+        ideas.extend([
+            "Flashcard app for any subject (with spaced repetition)",
+            "Language phrase-of-the-day with pronunciation",
+            "Math puzzle generator for kids"
+        ])
+    if "finance" in [c[0] for c in top]:
+        ideas.extend([
+            "Expense splitter for roommates/trips",
+            "Simple budget visualizer with pie charts",
+            "Savings goal tracker with progress bars"
+        ])
+    if "creative" in [c[0] for c in top]:
+        ideas.extend([
+            "Random prompt generator for writers/artists",
+            "Mood-based playlist + doodle canvas",
+            "Collaborative story builder"
+        ])
+    if "eco" in [c[0] for c in top]:
+        ideas.extend([
+            "Carbon footprint calculator for daily habits",
+            "Local recycling guide + points system",
+            "Plant care reminder & growth journal"
+        ])
+
+    # Shuffle and show 4–6 ideas
+    random.shuffle(ideas)
+    st.subheader("Suggested App Ideas")
+    for idea in ideas[:6]:
+        st.markdown(f"- {idea}")
+
+    st.markdown("---")
+    st.info("These are starting points — pick one that excites you most and start small (MVP)!")
+
+    if st.button("Start Over"):
+        st.session_state.answers = []
+        st.session_state.current_q = 0
+        st.rerun()
