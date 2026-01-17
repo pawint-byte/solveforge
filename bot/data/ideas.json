@@ -1,0 +1,84 @@
+{
+  "ideas": [
+    {
+      "title": "Habit Streak Tracker",
+      "description": "Track your daily habits with beautiful streak visualizations. Get motivated by seeing your progress over time.",
+      "category": "productivity"
+    },
+    {
+      "title": "Quick Recipe Finder",
+      "description": "Snap a photo of ingredients you have and get recipe suggestions instantly using AI.",
+      "category": "lifestyle"
+    },
+    {
+      "title": "Mood Journal",
+      "description": "Log your daily mood with just one tap. See patterns and insights about your emotional wellbeing.",
+      "category": "health"
+    },
+    {
+      "title": "Split Bill Calculator",
+      "description": "Never argue about splitting the check again. Handles tips, tax, and uneven splits.",
+      "category": "finance"
+    },
+    {
+      "title": "Focus Timer",
+      "description": "Pomodoro timer with ambient sounds and productivity tracking. Stay focused, get things done.",
+      "category": "productivity"
+    },
+    {
+      "title": "Plant Care Reminder",
+      "description": "Never forget to water your plants. Get reminders based on each plant's specific needs.",
+      "category": "lifestyle"
+    },
+    {
+      "title": "Workout Generator",
+      "description": "Get personalized workout routines based on your fitness level and available equipment.",
+      "category": "fitness"
+    },
+    {
+      "title": "Language Flashcards",
+      "description": "Learn new languages with spaced repetition flashcards. 10 minutes a day, fluency in months.",
+      "category": "education"
+    },
+    {
+      "title": "Budget Visualizer",
+      "description": "See where your money goes with beautiful charts. Set goals and track spending patterns.",
+      "category": "finance"
+    },
+    {
+      "title": "Micro Journal",
+      "description": "Write just one sentence a day. Build a meaningful journal without the pressure.",
+      "category": "lifestyle"
+    },
+    {
+      "title": "Trivia Challenge",
+      "description": "Daily trivia questions across multiple categories. Compete with friends on leaderboards.",
+      "category": "games"
+    },
+    {
+      "title": "Sleep Soundscapes",
+      "description": "Relaxing ambient sounds to help you fall asleep. White noise, rain, ocean waves, and more.",
+      "category": "health"
+    },
+    {
+      "title": "Quick Poll Maker",
+      "description": "Create instant polls and share with friends. Perfect for group decisions.",
+      "category": "social"
+    },
+    {
+      "title": "Closet Organizer",
+      "description": "Catalog your wardrobe and get outfit suggestions. Never say 'I have nothing to wear' again.",
+      "category": "lifestyle"
+    },
+    {
+      "title": "Parking Spot Finder",
+      "description": "Find and save where you parked. Set reminders for meter expiration.",
+      "category": "utility"
+    }
+  ],
+  "used": [
+    "Trivia Challenge",
+    "Language Flashcards"
+  ],
+  "generated": []
+}

@@ -80,3 +80,80 @@ shared/           # Shared types and schemas
 - **PostgreSQL**: Primary database
 - **connect-pg-simple**: Session storage
 - **drizzle-kit**: Database migrations and schema push
+
+## Content Creation Bot
+
+The project includes an autonomous content creation bot (`bot/` directory) for promoting the App Ideas app on social media.
+
+### Bot Architecture
+```
+bot/
+  __init__.py         # Package init
+  config.py           # Configuration and environment variables
+  ideas_generator.py  # App idea generation (database + AI)
+  script_generator.py # Video script generation
+  video_generator.py  # Video/image creation (ElevenLabs TTS + MoviePy)
+  social_poster.py    # Social media posting (Instagram, TikTok, X)
+  notifications.py    # Email notifications (SendGrid)
+  scheduler.py        # Daily scheduling
+  dashboard.py        # Flask admin dashboard
+  main.py             # Main workflow orchestrator
+  data/               # Ideas database (JSON)
+  output/             # Generated media and run logs
+  logs/               # Application logs
+```
+
+### Bot Features
+- **Idea Generation**: Pulls from 15+ built-in ideas or generates fresh ones via OpenAI
+- **Script Generation**: Creates 15-second promo scripts with hook, pitch, and CTA
+- **Video Creation**: ElevenLabs TTS voiceover with MoviePy video composition
+- **Social Posting**: Instagram Reels, TikTok, X (Twitter) with media upload
+- **Notifications**: Email alerts on success/failure via SendGrid
+- **Admin Dashboard**: Flask-based monitoring at port 5001
+
+### Required Environment Variables
+```
+# AI (uses Replit AI Integrations by default)
+OPENAI_API_KEY              # Optional if using Replit AI
+
+# Video Generation
+ELEVENLABS_API_KEY          # Text-to-speech
+ELEVENLABS_VOICE_ID         # Voice ID (default: Rachel)
+
+# Social Media
+INSTAGRAM_ACCESS_TOKEN      # Meta Graph API
+INSTAGRAM_BUSINESS_ID       # Instagram Business ID
+TIKTOK_ACCESS_TOKEN         # TikTok API
+TIKTOK_OPEN_ID              # TikTok user ID
+X_API_KEY                   # Twitter/X API
+X_API_SECRET
+X_ACCESS_TOKEN
+X_ACCESS_TOKEN_SECRET
+X_BEARER_TOKEN
+
+# CDN for Instagram/TikTok (required for video hosting)
+MEDIA_HOST_URL              # Public URL base for media hosting
+
+# Notifications
+SENDGRID_API_KEY            # SendGrid email API
+NOTIFICATION_EMAIL          # Email to receive notifications
+FROM_EMAIL                  # Sender email address
+```
+
+### Running the Bot
+```bash
+# Manual run
+python -c "from bot.main import run_daily_workflow; run_daily_workflow()"
+
+# Start scheduler (runs daily at 10 AM)
+python bot/scheduler.py
+
+# Run dashboard (port 5001)
+python bot/dashboard.py
+```
+
+### Production Notes
+- Instagram and TikTok APIs require videos hosted at public URLs
+- Configure a CDN (S3, Cloudflare R2) for media hosting
+- X (Twitter) supports direct file upload via Tweepy
+- Bot gracefully falls back to static images if video generation fails

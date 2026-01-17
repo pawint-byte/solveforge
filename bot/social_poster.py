@@ -14,15 +14,37 @@ from bot.config import (
 
 
 class InstagramPoster:
-    """Post Reels to Instagram via Graph API"""
+    """Post Reels to Instagram via Graph API
+    
+    IMPORTANT: Instagram Graph API requires media to be hosted at a public URL.
+    Configure MEDIA_HOST_URL environment variable to enable Instagram posting.
+    
+    Production deployment options:
+    - AWS S3 with public bucket
+    - Cloudflare R2
+    - Any CDN with public URL access
+    """
     
     def __init__(self):
         self.access_token = INSTAGRAM_ACCESS_TOKEN
         self.business_id = INSTAGRAM_BUSINESS_ID
         self.base_url = "https://graph.facebook.com/v18.0"
+        self.media_host_url = os.getenv("MEDIA_HOST_URL", "")
     
     def is_configured(self) -> bool:
         return bool(self.access_token and self.business_id)
+    
+    def _upload_to_cdn(self, local_path: str) -> Optional[str]:
+        """Upload local file to CDN and return public URL
+        
+        To implement: Configure your CDN credentials and upload logic here.
+        Returns the public URL of the uploaded file.
+        """
+        if not self.media_host_url:
+            return None
+        # In production, implement actual CDN upload here
+        # Example: boto3 for S3, httpx for Cloudflare R2
+        return None
     
     def upload_reel(self, video_path: str, caption: str) -> dict:
         """Upload a video as an Instagram Reel"""
@@ -30,21 +52,64 @@ class InstagramPoster:
             return {"success": False, "error": "Instagram not configured"}
         
         try:
+            # Try to get public URL for video
+            video_url = self._upload_to_cdn(video_path)
+            if not video_url:
+                return {
+                    "success": False,
+                    "error": "Instagram requires video at public URL. Set MEDIA_HOST_URL and implement CDN upload.",
+                    "action_required": "Configure CDN for media hosting"
+                }
+            
             # Step 1: Create media container
-            # Note: For Reels, the video must be hosted at a public URL
-            # In production, you'd upload to a CDN first
-            
-            # For now, return a placeholder response
-            # Real implementation would require:
-            # 1. Upload video to accessible URL
-            # 2. Create container with video_url
-            # 3. Publish the container
-            
-            return {
-                "success": False,
-                "error": "Instagram Reels requires video hosting. Please configure a CDN.",
-                "requires": "Video must be accessible via public URL"
+            container_url = f"{self.base_url}/{self.business_id}/media"
+            container_data = {
+                "media_type": "REELS",
+                "video_url": video_url,
+                "caption": caption,
+                "access_token": self.access_token
             }
+            
+            with httpx.Client(timeout=120.0) as client:
+                # Create container
+                response = client.post(container_url, data=container_data)
+                response.raise_for_status()
+                container_id = response.json().get("id")
+                
+                if not container_id:
+                    return {"success": False, "error": "Failed to create media container"}
+                
+                # Step 2: Check container status (video processing)
+                import time
+                status_url = f"{self.base_url}/{container_id}"
+                for _ in range(30):  # Wait up to 5 minutes
+                    status_response = client.get(status_url, params={
+                        "fields": "status_code",
+                        "access_token": self.access_token
+                    })
+                    status = status_response.json().get("status_code")
+                    
+                    if status == "FINISHED":
+                        break
+                    elif status == "ERROR":
+                        return {"success": False, "error": "Instagram video processing failed"}
+                    
+                    time.sleep(10)
+                
+                # Step 3: Publish the container
+                publish_url = f"{self.base_url}/{self.business_id}/media_publish"
+                publish_response = client.post(publish_url, data={
+                    "creation_id": container_id,
+                    "access_token": self.access_token
+                })
+                publish_response.raise_for_status()
+                
+                media_id = publish_response.json().get("id")
+                return {
+                    "success": True,
+                    "media_id": media_id,
+                    "platform": "instagram"
+                }
             
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -55,19 +120,50 @@ class InstagramPoster:
             return {"success": False, "error": "Instagram not configured"}
         
         try:
-            # Similar limitation - needs public URL
-            return {
-                "success": False,
-                "error": "Instagram API requires image hosting",
-                "requires": "Image must be accessible via public URL"
-            }
+            # Try to get public URL for image
+            image_url = self._upload_to_cdn(image_path)
+            if not image_url:
+                return {
+                    "success": False,
+                    "error": "Instagram requires image at public URL. Set MEDIA_HOST_URL and implement CDN upload.",
+                    "action_required": "Configure CDN for media hosting"
+                }
+            
+            # Create and publish image
+            container_url = f"{self.base_url}/{self.business_id}/media"
+            with httpx.Client(timeout=60.0) as client:
+                response = client.post(container_url, data={
+                    "image_url": image_url,
+                    "caption": caption,
+                    "access_token": self.access_token
+                })
+                response.raise_for_status()
+                container_id = response.json().get("id")
+                
+                # Publish
+                publish_url = f"{self.base_url}/{self.business_id}/media_publish"
+                publish_response = client.post(publish_url, data={
+                    "creation_id": container_id,
+                    "access_token": self.access_token
+                })
+                publish_response.raise_for_status()
+                
+                return {
+                    "success": True,
+                    "media_id": publish_response.json().get("id"),
+                    "platform": "instagram"
+                }
             
         except Exception as e:
             return {"success": False, "error": str(e)}
 
 
 class TikTokPoster:
-    """Post videos to TikTok via Official API"""
+    """Post videos to TikTok via Official API
+    
+    Uses TikTok Content Posting API v2.
+    Requires TikTok Developer account with video.upload scope.
+    """
     
     def __init__(self):
         self.access_token = TIKTOK_ACCESS_TOKEN
@@ -78,15 +174,12 @@ class TikTokPoster:
         return bool(self.access_token and self.open_id)
     
     def upload_video(self, video_path: str, caption: str) -> dict:
-        """Upload a video to TikTok"""
+        """Upload a video to TikTok with full publish flow"""
         if not self.is_configured():
             return {"success": False, "error": "TikTok not configured"}
         
         try:
-            # TikTok Content Posting API flow:
-            # 1. Initialize upload
-            # 2. Upload video chunks
-            # 3. Publish
+            import time
             
             headers = {
                 "Authorization": f"Bearer {self.access_token}",
@@ -114,7 +207,7 @@ class TikTokPoster:
                 }
             }
             
-            with httpx.Client(timeout=120.0) as client:
+            with httpx.Client(timeout=180.0) as client:
                 init_response = client.post(init_url, json=init_data, headers=headers)
                 
                 if init_response.status_code != 200:
@@ -124,11 +217,18 @@ class TikTokPoster:
                     }
                 
                 init_result = init_response.json()
+                error_info = init_result.get("error", {})
+                if error_info.get("code") != "ok":
+                    return {
+                        "success": False,
+                        "error": f"TikTok API error: {error_info.get('message', 'Unknown')}"
+                    }
+                
                 upload_url = init_result.get("data", {}).get("upload_url")
                 publish_id = init_result.get("data", {}).get("publish_id")
                 
-                if not upload_url:
-                    return {"success": False, "error": "No upload URL received"}
+                if not upload_url or not publish_id:
+                    return {"success": False, "error": "No upload URL or publish ID received"}
                 
                 # Step 2: Upload video
                 with open(video_path, "rb") as f:
@@ -147,12 +247,45 @@ class TikTokPoster:
                         "success": False,
                         "error": f"TikTok upload failed: {upload_response.text}"
                     }
-            
-            return {
-                "success": True,
-                "publish_id": publish_id,
-                "platform": "tiktok"
-            }
+                
+                # Step 3: Check publish status
+                status_url = f"{self.base_url}/post/publish/status/fetch/"
+                for attempt in range(30):  # Wait up to 5 minutes
+                    time.sleep(10)
+                    
+                    status_response = client.post(
+                        status_url,
+                        json={"publish_id": publish_id},
+                        headers=headers
+                    )
+                    
+                    if status_response.status_code != 200:
+                        continue
+                    
+                    status_data = status_response.json().get("data", {})
+                    status = status_data.get("status")
+                    
+                    if status == "PUBLISH_COMPLETE":
+                        return {
+                            "success": True,
+                            "publish_id": publish_id,
+                            "video_id": status_data.get("publicaly_available_post_id", [None])[0],
+                            "platform": "tiktok"
+                        }
+                    elif status in ["FAILED", "PROCESSING_DOWNLOAD_FAILED"]:
+                        fail_reason = status_data.get("fail_reason", "Unknown failure")
+                        return {
+                            "success": False,
+                            "error": f"TikTok publish failed: {fail_reason}"
+                        }
+                
+                # Timeout - but video may still publish
+                return {
+                    "success": True,
+                    "publish_id": publish_id,
+                    "platform": "tiktok",
+                    "note": "Upload completed, final status pending"
+                }
             
         except Exception as e:
             return {"success": False, "error": str(e)}
