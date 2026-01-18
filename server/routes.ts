@@ -10,7 +10,7 @@ import { addSubscriberToMailchimp, removeSubscriberFromMailchimp } from "./mailc
 
 // Admin user IDs - add your user ID here after first login
 const ADMIN_USER_IDS = new Set<string>([
-  // Add admin user IDs here
+  "52852375",  // Andrew A Wint
 ]);
 
 // Middleware to check if user is admin
