@@ -8,8 +8,14 @@ import Home from "@/pages/home";
 import SubmitPage from "@/pages/submit";
 import SubmissionDetail from "@/pages/submission-detail";
 import AdminDashboard from "@/pages/admin";
+import { useEffect } from "react";
+import { initGA } from "./lib/analytics";
+import { useAnalytics } from "./hooks/use-analytics";
+import { initAffiliateTracking } from "./lib/affiliate";
 
 function Router() {
+  useAnalytics();
+  
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -23,6 +29,13 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    if (import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      initGA();
+    }
+    initAffiliateTracking();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

@@ -62,9 +62,12 @@ shared/                     # Shared types and schemas
 - **users**: User accounts (from Replit Auth)
 - **sessions**: Express session storage
 - **submissions**: Problem submissions with status workflow
-- **payments**: Payment tracking for submissions (Stripe-ready)
+- **payments**: Payment tracking for submissions (Stripe integrated)
 - **reviews**: User reviews after completion
 - **messages**: Admin-user messaging per submission
+- **newsletter_subscribers**: Email subscribers for marketing
+- **referrals**: Referral tracking with unique codes
+- **user_credits**: Credit/rewards system for referrals
 
 ### Status Workflow
 Submissions follow this status progression:
@@ -104,6 +107,26 @@ Submissions follow this status progression:
 - `GET /api/submissions/:id/messages` - Get messages
 - `POST /api/submissions/:id/messages` - Send message
 
+### Stripe Payments
+- `GET /api/stripe/config` - Get Stripe publishable key
+- `POST /api/submissions/:id/checkout` - Create checkout session for deposit
+- `GET /api/submissions/:id/payments` - Get payments for submission
+- `POST /api/admin/submissions/:id/milestone` - Create milestone payment (admin)
+
+### Newsletter
+- `POST /api/newsletter/subscribe` - Subscribe to newsletter
+- `POST /api/newsletter/unsubscribe` - Unsubscribe from newsletter
+
+### Referrals
+- `GET /api/referral/code` - Get or create referral code
+- `GET /api/referral/stats` - Get referral statistics
+- `POST /api/referral/track` - Track referral click
+- `POST /api/referral/apply` - Apply referral after signup
+- `GET /api/credits` - Get user's credit balance
+
+### Affiliate Marketing
+- `POST /api/affiliate/conversion` - Track affiliate conversion (ShareASale prep)
+
 ## Admin Configuration
 
 To grant admin access, add user IDs to the `ADMIN_USER_IDS` set in `server/routes.ts`:
@@ -141,9 +164,49 @@ The application runs via the "Start application" workflow which executes `npm ru
 - Vite serves the React frontend
 - Both run on port 5000
 
+## Marketing & Growth Features
+
+### Google Analytics 4
+- UTM parameter tracking for ad campaigns
+- Custom event tracking (submissions, payments, signups, shares)
+- Session storage for attribution
+
+### Social Sharing
+- Share buttons for X, Facebook, LinkedIn
+- Pre-filled promo text for submissions and referrals
+- Copy link functionality
+
+### Referral System
+- Unique referral codes per user
+- Credit rewards (100 credits for referrer, 50 for referred)
+- Referral tracking and stats
+
+### Newsletter
+- Email subscription management
+- Unsubscribe functionality
+- Source tracking
+
+### PWA Support
+- Web app manifest for mobile installation
+- App shortcuts for quick access
+- Apple mobile web app support
+
+### Affiliate Marketing (Prepared)
+- ShareASale integration hooks
+- Conversion tracking structure
+- Session-based affiliate attribution
+
+## Payment Structure
+
+Milestone-based payments (30/40/30 split):
+1. **Deposit (30%)** - Paid upfront when submission is approved
+2. **Midpoint (40%)** - Paid when solution is proposed
+3. **Final (30%)** - Paid upon completion
+
 ## Future Enhancements
 
-- Stripe payment integration (schema ready)
+- Mailchimp API integration for automated emails
 - File attachments for submissions
 - Email notifications
 - Analytics dashboard
+- Full ShareASale integration with merchant ID

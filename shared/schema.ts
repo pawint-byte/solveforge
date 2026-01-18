@@ -98,6 +98,40 @@ export const messages = pgTable("messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Newsletter Subscribers Table
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  isActive: boolean("is_active").notNull().default(true),
+  source: varchar("source", { length: 50 }).default("website"),
+  createdAt: timestamp("created_at").defaultNow(),
+  unsubscribedAt: timestamp("unsubscribed_at"),
+});
+
+// Referrals Table
+export const referrals = pgTable("referrals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  referrerUserId: varchar("referrer_user_id").notNull(),
+  referralCode: varchar("referral_code", { length: 20 }).notNull().unique(),
+  referredUserId: varchar("referred_user_id"),
+  referredEmail: varchar("referred_email", { length: 255 }),
+  status: varchar("status", { length: 20 }).notNull().default("pending"),
+  creditsEarned: integer("credits_earned").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  convertedAt: timestamp("converted_at"),
+});
+
+// User Credits Table (for referral rewards)
+export const userCredits = pgTable("user_credits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  amount: integer("amount").notNull().default(0),
+  type: varchar("type", { length: 50 }).notNull(),
+  description: text("description"),
+  referralId: varchar("referral_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const submissionsRelations = relations(submissions, ({ many }) => ({
   payments: many(payments),
@@ -152,6 +186,23 @@ export const insertMessageSchema = createInsertSchema(messages).omit({
   readAt: true,
 });
 
+export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSubscribers).omit({
+  id: true,
+  createdAt: true,
+  unsubscribedAt: true,
+});
+
+export const insertReferralSchema = createInsertSchema(referrals).omit({
+  id: true,
+  createdAt: true,
+  convertedAt: true,
+});
+
+export const insertUserCreditsSchema = createInsertSchema(userCredits).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type Submission = typeof submissions.$inferSelect;
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
@@ -161,3 +212,9 @@ export type Review = typeof reviews.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = z.infer<typeof insertReferralSchema>;
+export type UserCredits = typeof userCredits.$inferSelect;
+export type InsertUserCredits = z.infer<typeof insertUserCreditsSchema>;
