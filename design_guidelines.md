@@ -1,103 +1,141 @@
-# Design Guidelines: App Idea Generator Quiz
+# Design Guidelines: SolveForge Platform
 
 ## Design Approach
-**Selected System**: Material Design 3 with modern quiz interface patterns
-**Rationale**: Quiz applications require clear visual hierarchy, intuitive selection states, and smooth progression feedback. Material Design's emphasis on clear interactions and feedback states aligns perfectly with this use case.
+**Selected System**: Material Design 3 with Upwork-inspired professional patterns
+**Rationale**: Enterprise crowdsourcing platforms require trustworthy visual language, clear data hierarchy, and scalable component systems. Material Design's structured approach ensures consistency across complex dashboards while maintaining professional credibility.
 
 ## Typography System
-- **Headlines** (Quiz title, results): 32-40px, font-weight: 700, tight line-height (1.1)
-- **Question text**: 24px, font-weight: 600, line-height: 1.3
-- **Options/body**: 16-18px, font-weight: 400, line-height: 1.6
-- **Helper text/info**: 14px, font-weight: 400, opacity: 0.7
-- **Font Stack**: System fonts (Inter/SF Pro/Segoe UI fallbacks) for maximum readability
+- **Page Titles**: 36-48px, font-weight: 700, line-height: 1.1
+- **Section Headers**: 24-32px, font-weight: 600, line-height: 1.2
+- **Card Titles**: 18-20px, font-weight: 600, line-height: 1.3
+- **Body/Description**: 15-16px, font-weight: 400, line-height: 1.6
+- **Metadata/Labels**: 13-14px, font-weight: 500, uppercase tracking-wide
+- **Font Stack**: Inter, -apple-system, Segoe UI, sans-serif
 
 ## Layout System
-**Spacing Units**: Use Tailwind spacing of 4, 6, 8, 12, 16 (e.g., p-4, mb-8, gap-6)
+**Spacing Units**: Tailwind 4, 6, 8, 12, 16, 24 (e.g., p-6, gap-8, mb-24)
 
 **Container Strategy**:
-- Quiz container: max-w-2xl, centered with mx-auto
-- Vertical padding: py-12 for main container
-- Card-based layout with rounded-2xl borders
-- Questions and results contained in elevated cards (shadow-lg)
+- Max-width: max-w-7xl for dashboards, max-w-6xl for content pages
+- Section padding: py-16 desktop, py-12 mobile
+- Grid layouts: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 for cards
+- Sidebar dashboards: 280px fixed sidebar + flex-1 main content
 
 ## Component Library
 
-### Question Card
-- White/neutral background with subtle shadow
-- Padding: p-8 to p-12
-- Progress indicator at top (e.g., "Question 2 of 4") with small text and progress bar
-- Question text prominent with mb-8 spacing
-- Radio options in vertical stack with gap-4
+### Navigation Header
+- Fixed top position, backdrop-blur with border-bottom
+- Height: h-16, contains logo + nav links + user menu
+- Desktop: horizontal menu with gap-8 links
+- Mobile: Hamburger menu with slide-in drawer
+- User avatar: 40px circle with dropdown menu
 
-### Radio Options
-- Large clickable areas (min-height: 60px)
-- Clear border (2px) with rounded-xl corners
-- Padding: px-6 py-4
-- Hover state: subtle border color change + light background tint
-- Selected state: bold border, filled background tint
-- Transition: all states animate smoothly (150ms)
-- Typography: 17px medium weight for readability
+### Hero Section (Landing Page)
+- Full-width background image showing collaborative workspace/professionals
+- Height: 70vh minimum
+- Overlay: gradient from transparent to dark (60% opacity)
+- Content: Centered, max-w-4xl
+- CTA buttons with backdrop-blur-md and semi-transparent bg
+- Headline: 48-56px bold white text with shadow
+- Subheadline: 20px, opacity-90
 
-### Navigation Buttons
-- Primary "Next" button: Large (px-8 py-4), rounded-xl, font-weight: 600
-- "Start Over" button: Secondary style, outlined variant
-- Positioned with mt-8 spacing from options
-- Full-width on mobile, auto-width on desktop (min-w-[200px])
+### Problem/Idea Submission Cards
+- White background (dark mode: dark gray), rounded-xl, shadow-md
+- Padding: p-6
+- Header: Avatar (48px) + Name + Timestamp in flex layout
+- Title: 20px semibold, mb-3
+- Description: 15px regular, text-gray-700, line-clamp-3
+- Footer: Category badge + Price tag + Status indicator, flex gap-3
+- Hover: shadow-lg, scale-101, transition-all 200ms
 
-### Results Display
-- Success message banner with rounded corners and icon
-- "Top Interests" section: List with large bullet points, mb-12
-- Each interest: 20px font size, includes score badge (rounded pill)
-- App ideas list: Checkmark bullets, generous line spacing (leading-8)
-- Ideas displayed in 2-column grid on desktop (grid-cols-1 md:grid-cols-2), gap-4
+### Dashboard Layout
+- Left sidebar: Navigation with icons + labels, w-72
+- Main area: Grid of cards with filters at top
+- Filter bar: Horizontal scrolling chips on mobile, flex wrap desktop
+- Stats row: 4-column grid showing key metrics (submissions, active, earnings, etc.)
+- Each stat card: Large number (32px) + label (14px) + trend indicator
 
-### Info/Helper Components
-- Info boxes: Light background, rounded-lg, px-4 py-3
-- Icons: 20-24px, inline with text or standalone
-- Section dividers: Horizontal rules with opacity-20, my-12
+### Payment/Transaction Components
+- Price display: Large bold number (24-28px) with currency symbol
+- Payment badges: Rounded-full pills with status colors
+- Transaction history: Table layout with alternating row backgrounds
+- Action buttons: "Accept", "Reject" with clear visual hierarchy
+
+### Admin Dashboard
+- Multi-tab interface with underline active states
+- Data tables: Striped rows, sortable headers, inline actions
+- User management cards: Avatar + info + role badge + action menu
+- Analytics charts: Simple bar/line charts with tooltips (placeholder areas)
+
+### Form Inputs
+- Height: h-12, rounded-lg borders
+- Label: 14px semibold, mb-2
+- Focus state: 2px ring with primary color
+- Textarea: min-h-32 for descriptions
+- File upload: Dashed border dropzone with icon + instructions
+
+### Buttons
+- Primary: px-6 py-3, rounded-lg, font-semibold, shadow-sm
+- Secondary: Outlined with 2px border
+- Ghost: No background, hover shows subtle fill
+- Icon buttons: 40px square, rounded-lg
+- Button groups: Connected with shared borders
+
+### Status Indicators
+- Badges: Rounded-full, px-3 py-1, 12px text, uppercase
+- States: Open (blue), In Progress (amber), Completed (green), Cancelled (gray)
+- Notification dots: 8px circle, positioned absolute top-right
 
 ## Visual Hierarchy
-**Progressive Disclosure**:
-- Single question visible at a time (minimizes cognitive load)
-- Smooth transitions between questions (fade/slide effects at 200ms)
-- Progress indicator always visible to show completion status
 
-**Results Page**:
-- Three-tier hierarchy: Success message → Top interests → App ideas
-- Each section visually separated with spacing (mb-16 between major sections)
-- Scannable list format with clear visual markers
+**Landing Page Flow**:
+1. Hero with impactful imagery and primary CTA
+2. "How It Works" - 3-column feature grid with icons
+3. "Recent Problems" - Horizontal scrolling card carousel
+4. "Why SolveForge" - 2-column layout with image + benefits list
+5. Pricing/Plans - 3-column comparison cards
+6. CTA section - Centered with secondary actions
+7. Footer - 4-column layout with links, contact, social
 
-## Animations & Interactions
-- Question transitions: Subtle fade-in (300ms) when advancing
-- Radio selection: Immediate visual feedback with smooth scale (1.02) on click
-- Button states: Gentle hover lift (translateY: -2px) + shadow increase
-- Progress bar: Animated fill on question advance
-- NO distracting or continuous animations
+**Dashboard Priority**:
+- Stats overview → Filter controls → Content grid → Pagination
+- Sidebar navigation always visible (collapsed on mobile)
+- Primary actions prominently positioned in top-right
 
-## Mobile Optimization
-- Radio options stack vertically with increased touch targets (min-height: 64px)
-- Buttons full-width on mobile (w-full sm:w-auto)
-- Reduced padding on cards (p-6 on mobile vs p-12 on desktop)
-- Font sizes scale down slightly (question: 20px mobile, 24px desktop)
+## Dark Mode Strategy
+- Background: #0f172a (slate-900) for main, #1e293b (slate-800) for cards
+- Text: white at opacity-90 for primary, opacity-70 for secondary
+- Borders: white at opacity-10
+- Cards: subtle elevation with lighter backgrounds, not shadows
+- Inputs: Dark backgrounds with lighter borders, white text
+- Toggle in header user menu with smooth transition-colors 300ms
 
 ## Images
-**No hero image required** - This is a utility application where functionality takes priority over visual marketing. The quiz interface itself is the primary content.
+**Hero Image**: Professional collaborative workspace with diverse team working together, bright and aspirational. Full-width, 70vh height, positioned behind content with dark overlay gradient.
 
-**Optional decorative elements**:
-- Small celebratory icon/illustration on results page (positioned above success message, max-width: 120px)
-- Category icons next to top interests (24px, inline-start)
-- Consider emoji or simple line icons for visual interest without bulk
+**Feature Section Images**: Abstract tech/innovation graphics or platform screenshots showing the interface in use. Positioned in alternating left/right layouts with rounded-xl borders.
+
+**User Avatars**: Circular, 40-48px for cards, 32px for compact views, colored background with initials when no image.
+
+**Empty States**: Friendly illustrations for "no submissions yet", "no results found" - centered with helpful action text.
 
 ## Accessibility
-- High contrast ratios (4.5:1 minimum for body text)
-- Focus states: 3px outline offset with brand accent color
-- Radio inputs maintain native functionality with enhanced visuals
-- Clear error states if selection required (red border + error text)
-- Labels properly associated with all interactive elements
+- ARIA labels on all interactive elements
+- Keyboard navigation with visible focus rings (3px offset)
+- Color contrast 4.5:1 minimum, 7:1 for important actions
+- Screen reader announcements for status changes
+- Skip navigation link for keyboard users
+
+## Mobile Optimization
+- Sidebar collapses to hamburger menu
+- Cards stack to single column
+- Stats grid: 2 columns on mobile vs 4 on desktop
+- Bottom tab navigation for primary actions
+- Reduced padding: p-4 mobile vs p-6 desktop
+- Touch targets: Minimum 44px height
 
 ## Key Design Principles
-1. **Clarity Over Decoration**: Every element serves the quiz-taking experience
-2. **Instant Feedback**: Users immediately see their selections and progress
-3. **Minimal Friction**: Large touch targets, clear CTAs, obvious next steps
-4. **Delightful Results**: The payoff (app ideas) feels rewarding and personalized
-5. **Scannable Lists**: Results formatted for quick reading and inspiration
+1. **Trust Through Clarity**: Clean layouts with clear information hierarchy build confidence
+2. **Efficient Workflows**: Minimize clicks, surface key actions, provide contextual information
+3. **Scalable Systems**: Components work across problem submissions, user management, and payments
+4. **Professional Polish**: Consistent spacing, refined interactions, premium feel without excess

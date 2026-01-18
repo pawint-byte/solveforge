@@ -1,8 +1,8 @@
-# App Idea Generator Quiz
+# SolveForge - Crowdsourcing Problem-Solving Platform
 
 ## Overview
 
-This is an interactive quiz application that helps users discover what kind of app they might enjoy building. Users answer questions about their interests, target users, and preferences, then receive personalized app ideas based on their responses. The app follows Material Design 3 principles with a modern quiz interface featuring smooth animations and clear visual feedback.
+SolveForge is a web-based crowdsourcing platform where users submit problems, ideas, or challenges they need solved. Users can create detailed problem submissions with budget ranges and timelines, track their submission status, and communicate with admins through a built-in messaging system.
 
 ## User Preferences
 
@@ -14,146 +14,136 @@ Preferred communication style: Simple, everyday language.
 - **Framework**: React 18 with TypeScript
 - **Routing**: Wouter (lightweight React router)
 - **State Management**: TanStack React Query for server state, React useState for local UI state
-- **Styling**: Tailwind CSS with CSS variables for theming (light/dark mode support)
+- **Styling**: Tailwind CSS with CSS variables for theming (blue/indigo professional branding)
 - **UI Components**: shadcn/ui component library built on Radix UI primitives
-- **Animations**: Framer Motion for smooth transitions between quiz questions
 - **Build Tool**: Vite with hot module replacement
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express
 - **Language**: TypeScript with ESM modules
 - **API Pattern**: RESTful endpoints prefixed with `/api`
+- **Authentication**: Replit Auth (OpenID Connect) - supports Google, GitHub, X, Apple, email/password
+- **Session Storage**: PostgreSQL with connect-pg-simple
 - **Development**: tsx for running TypeScript directly
 - **Production**: esbuild bundles server code, Vite bundles client
 
 ### Project Structure
 ```
-client/           # React frontend
+client/                     # React frontend
   src/
-    components/   # UI components (shadcn/ui)
-    pages/        # Route components
-    hooks/        # Custom React hooks
-    lib/          # Utilities and query client
-server/           # Express backend
-  index.ts        # Server entry point
-  routes.ts       # API route definitions
-  storage.ts      # Data access layer
-shared/           # Shared types and schemas
-  schema.ts       # Drizzle ORM schema definitions
+    components/             # UI components (shadcn/ui)
+    pages/                  # Route components
+      home.tsx              # Landing page (logged out) or Dashboard (logged in)
+      landing.tsx           # Marketing landing page
+      dashboard.tsx         # User dashboard with submissions
+      submit.tsx            # Problem submission form
+      submission-detail.tsx # View submission with messaging
+      admin.tsx             # Admin dashboard
+    hooks/                  # Custom React hooks (use-auth.ts)
+    lib/                    # Utilities and query client
+server/                     # Express backend
+  index.ts                  # Server entry point
+  routes.ts                 # API route definitions
+  storage.ts                # Data access layer (DatabaseStorage)
+  db.ts                     # Database connection
+  replit_integrations/      # Auth module
+shared/                     # Shared types and schemas
+  schema.ts                 # Drizzle ORM schema definitions
+  models/                   # Auth models
 ```
 
 ### Data Layer
 - **ORM**: Drizzle ORM with PostgreSQL dialect
 - **Schema Validation**: Zod with drizzle-zod integration
-- **Current Storage**: In-memory storage (MemStorage class) with interface for future database migration
-- **Database Ready**: Schema and configuration prepared for PostgreSQL when DATABASE_URL is provided
+- **Database**: PostgreSQL (Neon-backed via Replit)
+- **Session Storage**: PostgreSQL sessions table
+
+### Database Schema
+- **users**: User accounts (from Replit Auth)
+- **sessions**: Express session storage
+- **submissions**: Problem submissions with status workflow
+- **payments**: Payment tracking for submissions (Stripe-ready)
+- **reviews**: User reviews after completion
+- **messages**: Admin-user messaging per submission
+
+### Status Workflow
+Submissions follow this status progression:
+1. `pending` - Initial submission, awaiting review
+2. `in_review` - Being reviewed by admin
+3. `approved` - Approved for work
+4. `in_progress` - Work has started
+5. `solution_proposed` - Solution ready for review
+6. `completed` - Successfully delivered
+7. `cancelled` - Cancelled by user or admin
 
 ### Design System
-- Material Design 3 principles adapted for quiz interfaces
-- Card-based layout with max-w-2xl centered container
-- Large clickable radio options (min-height 60px) with clear selection states
-- Progress indicator showing question number and completion bar
-- Typography: System fonts with specific sizing for headlines (32-40px), questions (24px), and options (16-18px)
+- Professional blue/indigo branding (primary: 226 70% 50%)
+- Card-based layout with clear visual hierarchy
+- Material Design 3 principles adapted for web
+- Trust-focused elements (security badges, clear pricing)
+- Light/dark mode support
+
+## API Routes
+
+### Authentication
+- `GET /api/login` - Initiate login flow
+- `GET /api/logout` - Logout
+- `GET /api/auth/user` - Get current user
+
+### Submissions
+- `POST /api/submissions` - Create new submission
+- `GET /api/submissions/my` - Get user's submissions
+- `GET /api/submissions/:id` - Get single submission
+
+### Admin
+- `GET /api/admin/check` - Check if user is admin
+- `GET /api/admin/submissions` - Get all submissions
+- `PATCH /api/admin/submissions/:id` - Update submission status
+
+### Messages
+- `GET /api/submissions/:id/messages` - Get messages
+- `POST /api/submissions/:id/messages` - Send message
+
+## Admin Configuration
+
+To grant admin access, add user IDs to the `ADMIN_USER_IDS` set in `server/routes.ts`:
+
+```typescript
+const ADMIN_USER_IDS = new Set<string>([
+  "your-user-id-here",  // Add after first login
+]);
+```
+
+User IDs can be found in the database users table or from `req.user.claims.sub`.
 
 ## External Dependencies
 
 ### UI Framework
-- **Radix UI**: Accessible component primitives (dialog, radio-group, progress, toast, etc.)
-- **shadcn/ui**: Pre-styled component library using Radix + Tailwind
+- **Radix UI**: Accessible component primitives
+- **shadcn/ui**: Pre-styled component library
 - **Lucide React**: Icon library
 
 ### Data & State
-- **TanStack React Query**: Server state management and caching
+- **TanStack React Query**: Server state management
 - **Zod**: Runtime type validation
-- **Drizzle ORM**: Type-safe database queries (PostgreSQL ready)
+- **Drizzle ORM**: Type-safe database queries
 
-### Animation
-- **Framer Motion**: Page transitions and micro-interactions
-- **Embla Carousel**: Carousel component support
+### Authentication
+- **openid-client**: OpenID Connect client
+- **passport**: Authentication middleware
+- **express-session**: Session management
+- **connect-pg-simple**: PostgreSQL session store
 
-### Development
-- **Vite**: Frontend bundling and dev server
-- **esbuild**: Production server bundling
-- **TypeScript**: Type safety across full stack
+## Running the Project
 
-### Database (When Provisioned)
-- **PostgreSQL**: Primary database
-- **connect-pg-simple**: Session storage
-- **drizzle-kit**: Database migrations and schema push
+The application runs via the "Start application" workflow which executes `npm run dev`:
+- Express server handles API routes
+- Vite serves the React frontend
+- Both run on port 5000
 
-## Content Creation Bot
+## Future Enhancements
 
-The project includes an autonomous content creation bot (`bot/` directory) for promoting the App Ideas app on social media.
-
-### Bot Architecture
-```
-bot/
-  __init__.py         # Package init
-  config.py           # Configuration and environment variables
-  ideas_generator.py  # App idea generation (database + AI)
-  script_generator.py # Video script generation
-  video_generator.py  # Video/image creation (ElevenLabs TTS + MoviePy)
-  social_poster.py    # Social media posting (Instagram, TikTok, X)
-  notifications.py    # Email notifications (SendGrid)
-  scheduler.py        # Daily scheduling
-  dashboard.py        # Flask admin dashboard
-  main.py             # Main workflow orchestrator
-  data/               # Ideas database (JSON)
-  output/             # Generated media and run logs
-  logs/               # Application logs
-```
-
-### Bot Features
-- **Idea Generation**: Pulls from 15+ built-in ideas or generates fresh ones via OpenAI
-- **Script Generation**: Creates 15-second promo scripts with hook, pitch, and CTA
-- **Video Creation**: ElevenLabs TTS voiceover with MoviePy video composition
-- **Social Posting**: Instagram Reels, TikTok, X (Twitter) with media upload
-- **Notifications**: Email alerts on success/failure via SendGrid
-- **Admin Dashboard**: Flask-based monitoring at port 5001
-
-### Required Environment Variables
-```
-# AI (uses Replit AI Integrations by default)
-OPENAI_API_KEY              # Optional if using Replit AI
-
-# Video Generation
-ELEVENLABS_API_KEY          # Text-to-speech
-ELEVENLABS_VOICE_ID         # Voice ID (default: Rachel)
-
-# Social Media
-INSTAGRAM_ACCESS_TOKEN      # Meta Graph API
-INSTAGRAM_BUSINESS_ID       # Instagram Business ID
-TIKTOK_ACCESS_TOKEN         # TikTok API
-TIKTOK_OPEN_ID              # TikTok user ID
-X_API_KEY                   # Twitter/X API
-X_API_SECRET
-X_ACCESS_TOKEN
-X_ACCESS_TOKEN_SECRET
-X_BEARER_TOKEN
-
-# CDN for Instagram/TikTok (required for video hosting)
-MEDIA_HOST_URL              # Public URL base for media hosting
-
-# Notifications
-SENDGRID_API_KEY            # SendGrid email API
-NOTIFICATION_EMAIL          # Email to receive notifications
-FROM_EMAIL                  # Sender email address
-```
-
-### Running the Bot
-```bash
-# Manual run
-python -c "from bot.main import run_daily_workflow; run_daily_workflow()"
-
-# Start scheduler (runs daily at 10 AM)
-python bot/scheduler.py
-
-# Run dashboard (port 5001)
-python bot/dashboard.py
-```
-
-### Production Notes
-- Instagram and TikTok APIs require videos hosted at public URLs
-- Configure a CDN (S3, Cloudflare R2) for media hosting
-- X (Twitter) supports direct file upload via Tweepy
-- Bot gracefully falls back to static images if video generation fails
+- Stripe payment integration (schema ready)
+- File attachments for submissions
+- Email notifications
+- Analytics dashboard
