@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare } from "lucide-react";
+import { NewsletterSignup } from "@/components/newsletter-signup";
+import { SocialShareButtons } from "@/components/social-share";
 
 export default function Landing() {
   return (
@@ -140,8 +142,21 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Newsletter Section */}
       <section className="py-20 px-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Stay Updated
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Get tips on problem-solving, success stories, and platform updates delivered to your inbox.
+          </p>
+          <NewsletterSignup />
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-6 bg-muted/30">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Get Your Problem Solved?
@@ -154,6 +169,15 @@ export default function Landing() {
               Submit Your Problem <ArrowRight className="w-5 h-5" />
             </Button>
           </a>
+          <div className="mt-8">
+            <p className="text-sm text-muted-foreground mb-4">Share SolveForge with others</p>
+            <div className="flex justify-center">
+              <SocialShareButtons 
+                title="SolveForge - Crowdsourcing Problem Solving" 
+                type="app" 
+              />
+            </div>
+          </div>
         </div>
       </section>
 
