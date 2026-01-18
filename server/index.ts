@@ -5,8 +5,12 @@ import { createServer } from "http";
 import { runMigrations } from "stripe-replit-sync";
 import { getStripeSync } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
+import path from "path";
 
 const app = express();
+
+// Serve static files from public directory (robots.txt, sitemap.xml, etc.)
+app.use(express.static(path.join(process.cwd(), "public")));
 const httpServer = createServer(app);
 
 declare module "http" {
