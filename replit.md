@@ -181,10 +181,11 @@ The application runs via the "Start application" workflow which executes `npm ru
 - Credit rewards (100 credits for referrer, 50 for referred)
 - Referral tracking and stats
 
-### Newsletter
-- Email subscription management
+### Newsletter with Mailchimp
+- Email subscription management synced with Mailchimp
+- Automatic subscriber list sync on subscribe/unsubscribe
+- Tag-based segmentation by source (website, reactivation)
 - Unsubscribe functionality
-- Source tracking
 
 ### PWA Support
 - Web app manifest for mobile installation

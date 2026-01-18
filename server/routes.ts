@@ -6,6 +6,7 @@ import { insertSubmissionSchema, insertMessageSchema, insertReviewSchema } from 
 import { z } from "zod";
 import { stripeService } from "./stripeService";
 import { getStripePublishableKey, getUncachableStripeClient } from "./stripeClient";
+import { addSubscriberToMailchimp, removeSubscriberFromMailchimp } from "./mailchimp";
 
 // Admin user IDs - add your user ID here after first login
 const ADMIN_USER_IDS = new Set<string>([
@@ -387,10 +388,14 @@ export async function registerRoutes(
         }
         // Re-activate subscription by updating existing record
         await storage.reactivateNewsletterSubscriber(email);
+        // Sync with Mailchimp
+        addSubscriberToMailchimp(email, "reactivation").catch(console.error);
         return res.json({ message: "Subscription reactivated" });
       }
 
       await storage.createNewsletterSubscriber({ email, source: "website" });
+      // Sync with Mailchimp
+      addSubscriberToMailchimp(email, "website").catch(console.error);
       res.status(201).json({ message: "Subscribed successfully" });
     } catch (error: any) {
       if (error.code === "23505") {
@@ -406,6 +411,8 @@ export async function registerRoutes(
     try {
       const { email } = req.body;
       await storage.unsubscribeNewsletter(email);
+      // Sync with Mailchimp
+      removeSubscriberFromMailchimp(email).catch(console.error);
       res.json({ message: "Unsubscribed successfully" });
     } catch (error) {
       console.error("Error unsubscribing:", error);
