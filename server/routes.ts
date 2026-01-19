@@ -321,6 +321,85 @@ export async function registerRoutes(
     }
   });
 
+  // Create a crypto checkout for a submission deposit using Coinbase Commerce
+  app.post("/api/submissions/:id/crypto-checkout", isAuthenticated, async (req: any, res) => {
+    try {
+      const { createCryptoCharge, isCoinbaseCommerceConfigured } = await import("./coinbaseCommerce");
+      
+      if (!isCoinbaseCommerceConfigured()) {
+        return res.status(503).json({ message: "Crypto payments not configured" });
+      }
+
+      const userId = req.user.claims.sub;
+      const submission = await storage.getSubmission(req.params.id);
+      
+      if (!submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+      
+      if (submission.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Check if already has a deposit payment
+      const existingPayments = await storage.getPaymentsBySubmission(req.params.id);
+      const hasDeposit = existingPayments.some(p => p.milestoneNumber === 1 && p.status === "completed");
+      if (hasDeposit) {
+        return res.status(400).json({ message: "Deposit already paid" });
+      }
+
+      // Calculate 30% deposit based on budget range midpoint
+      const budgetMidpoint = (submission.budgetMin + submission.budgetMax) / 2;
+      const depositAmount = (budgetMidpoint * 0.3).toFixed(2);
+
+      // Create payment record first (pending status)
+      const payment = await storage.createPayment({
+        submissionId: submission.id,
+        userId,
+        amount: depositAmount,
+        currency: submission.currency,
+        status: "pending",
+        milestoneNumber: 1,
+        description: "30% upfront deposit (Crypto)",
+      });
+
+      // Create a Coinbase Commerce charge
+      const charge = await createCryptoCharge({
+        name: `SolveForge Deposit - ${submission.title}`,
+        description: "30% upfront deposit for problem-solving service",
+        amount: depositAmount,
+        currency: submission.currency,
+        metadata: {
+          submissionId: submission.id,
+          userId,
+          milestoneNumber: "1",
+          type: "deposit",
+          paymentId: payment.id,
+        },
+        redirectUrl: `${req.protocol}://${req.get("host")}/submissions/${submission.id}?payment=success&crypto=true`,
+        cancelUrl: `${req.protocol}://${req.get("host")}/submissions/${submission.id}?payment=cancelled`,
+      });
+
+      // Update payment with crypto charge ID
+      await storage.updatePayment(payment.id, { stripePaymentId: `crypto_${charge.id}` });
+
+      res.json({ url: charge.hostedUrl, chargeId: charge.id });
+    } catch (error) {
+      console.error("Error creating crypto checkout:", error);
+      res.status(500).json({ message: "Failed to create crypto checkout" });
+    }
+  });
+
+  // Check if crypto payments are available
+  app.get("/api/crypto/available", async (req, res) => {
+    try {
+      const { isCoinbaseCommerceConfigured } = await import("./coinbaseCommerce");
+      res.json({ available: isCoinbaseCommerceConfigured() });
+    } catch (error) {
+      res.json({ available: false });
+    }
+  });
+
   // Get payments for a submission
   app.get("/api/submissions/:id/payments", isAuthenticated, async (req: any, res) => {
     try {

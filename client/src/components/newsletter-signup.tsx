@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +16,7 @@ export function NewsletterSignup({ variant = "inline", className = "" }: Newslet
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,14 +63,14 @@ export function NewsletterSignup({ variant = "inline", className = "" }: Newslet
         <form onSubmit={handleSubmit} className="space-y-3">
           <Input
             type="email"
-            placeholder="Enter your email"
+            placeholder={t('newsletter.placeholder')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
             data-testid="input-newsletter-email"
           />
           <Button type="submit" className="w-full" disabled={isLoading} data-testid="button-newsletter-subscribe">
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Subscribe"}
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('newsletter.subscribe')}
           </Button>
         </form>
       </div>
@@ -79,7 +81,7 @@ export function NewsletterSignup({ variant = "inline", className = "" }: Newslet
     <form onSubmit={handleSubmit} className={`flex gap-2 ${className}`}>
       <Input
         type="email"
-        placeholder="Enter your email"
+        placeholder={t('newsletter.placeholder')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         disabled={isLoading}
@@ -87,7 +89,7 @@ export function NewsletterSignup({ variant = "inline", className = "" }: Newslet
         data-testid="input-newsletter-email-inline"
       />
       <Button type="submit" disabled={isLoading} data-testid="button-newsletter-subscribe-inline">
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Subscribe"}
+        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('newsletter.subscribe')}
       </Button>
     </form>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
@@ -9,9 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, Zap, Clock, CheckCircle, AlertCircle, 
-  FileText, Send, Loader2, MessageSquare
+  FileText, Send, Loader2, MessageSquare, CreditCard, Bitcoin
 } from "lucide-react";
-import type { Submission, Message } from "@shared/schema";
+import type { Submission, Message, Payment } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
 
@@ -41,11 +42,13 @@ const timelineLabels: Record<string, string> = {
 };
 
 export default function SubmissionDetail() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState<"card" | "crypto" | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -62,6 +65,45 @@ export default function SubmissionDetail() {
     queryKey: ["/api/submissions", id, "messages"],
     enabled: !!submission,
   });
+
+  const { data: payments = [] } = useQuery<Payment[]>({
+    queryKey: ["/api/submissions", id, "payments"],
+    enabled: !!submission,
+  });
+
+  const { data: cryptoAvailable } = useQuery<{ available: boolean }>({
+    queryKey: ["/api/crypto/available"],
+  });
+
+  const handleCardPayment = async () => {
+    setPaymentLoading("card");
+    try {
+      const response = await apiRequest("POST", `/api/submissions/${id}/checkout`);
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast({ title: t('payments.error') || "Payment failed", variant: "destructive" });
+    } finally {
+      setPaymentLoading(null);
+    }
+  };
+
+  const handleCryptoPayment = async () => {
+    setPaymentLoading("crypto");
+    try {
+      const response = await apiRequest("POST", `/api/submissions/${id}/crypto-checkout`);
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast({ title: t('payments.error') || "Payment failed", variant: "destructive" });
+    } finally {
+      setPaymentLoading(null);
+    }
+  };
 
   const sendMessage = useMutation({
     mutationFn: async (content: string) => {
@@ -264,6 +306,58 @@ export default function SubmissionDetail() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Payment Section - Show when approved and deposit not paid */}
+            {submission.status === "approved" && !payments.some(p => p.milestoneNumber === 1 && p.status === "completed") && (
+              <Card className="border-primary">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-primary" />
+                    {t('payments.payDeposit')}
+                  </CardTitle>
+                  <CardDescription>
+                    30% deposit required to start work
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="text-center p-4 bg-muted/50 rounded-lg">
+                    <p className="text-2xl font-bold">
+                      ${((submission.budgetMin + submission.budgetMax) / 2 * 0.3).toFixed(2)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{submission.currency}</p>
+                  </div>
+                  <Button 
+                    onClick={handleCardPayment} 
+                    className="w-full gap-2" 
+                    disabled={paymentLoading !== null}
+                    data-testid="button-pay-card"
+                  >
+                    {paymentLoading === "card" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <CreditCard className="w-4 h-4" />
+                    )}
+                    {t('payments.payWithCard')}
+                  </Button>
+                  {cryptoAvailable?.available && (
+                    <Button 
+                      onClick={handleCryptoPayment} 
+                      variant="outline"
+                      className="w-full gap-2" 
+                      disabled={paymentLoading !== null}
+                      data-testid="button-pay-crypto"
+                    >
+                      {paymentLoading === "crypto" ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Bitcoin className="w-4 h-4" />
+                      )}
+                      {t('payments.payWithCrypto')}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>
