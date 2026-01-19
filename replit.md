@@ -109,9 +109,11 @@ Submissions follow this status progression:
 
 ### Stripe Payments
 - `GET /api/stripe/config` - Get Stripe publishable key
-- `POST /api/submissions/:id/checkout` - Create checkout session for deposit
+- `POST /api/submissions/:id/checkout` - Create checkout session for deposit (card)
+- `POST /api/submissions/:id/crypto-checkout` - Create Coinbase Commerce checkout (crypto)
 - `GET /api/submissions/:id/payments` - Get payments for submission
 - `POST /api/admin/submissions/:id/milestone` - Create milestone payment (admin)
+- `GET /api/crypto/available` - Check if crypto payments are available
 
 ### Newsletter
 - `POST /api/newsletter/subscribe` - Subscribe to newsletter
@@ -191,6 +193,19 @@ The application runs via the "Start application" workflow which executes `npm ru
 - Web app manifest for mobile installation
 - App shortcuts for quick access
 - Apple mobile web app support
+
+### Multi-Language Support (i18n)
+- React-i18next for internationalization
+- Supported languages: English (en), Spanish (es), French (fr)
+- Language switcher in the navigation header
+- Translation files in `client/src/locales/`
+- All key UI components fully translated
+
+### Cryptocurrency Payments
+- Coinbase Commerce integration for crypto payments
+- Supports BTC, ETH, and other major cryptocurrencies
+- Crypto payment option available alongside card payments
+- Environment variable: `COINBASE_COMMERCE_API_KEY` (optional)
 
 ### Affiliate Marketing (Prepared)
 - ShareASale integration hooks
