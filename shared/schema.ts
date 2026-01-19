@@ -201,6 +201,7 @@ export const documentTemplates = pgTable("document_templates", {
   variables: text("variables").array(),
   version: integer("version").notNull().default(1),
   isActive: boolean("is_active").notNull().default(true),
+  requiresSignature: boolean("requires_signature").notNull().default(false),
   createdBy: varchar("created_by"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

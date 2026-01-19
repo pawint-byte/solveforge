@@ -876,5 +876,451 @@ export async function registerRoutes(
     }
   });
 
+  // ============ DOCUMENT TEMPLATE ROUTES (Admin) ============
+
+  // Get all document templates (admin)
+  app.get("/api/admin/document-templates", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const templates = await storage.getAllDocumentTemplates();
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching document templates:", error);
+      res.status(500).json({ message: "Failed to fetch templates" });
+    }
+  });
+
+  // Create document template (admin)
+  app.post("/api/admin/document-templates", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const template = await storage.createDocumentTemplate(req.body);
+      res.status(201).json(template);
+    } catch (error) {
+      console.error("Error creating document template:", error);
+      res.status(500).json({ message: "Failed to create template" });
+    }
+  });
+
+  // Update document template (admin)
+  app.patch("/api/admin/document-templates/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const template = await storage.updateDocumentTemplate(req.params.id, req.body);
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+      res.json(template);
+    } catch (error) {
+      console.error("Error updating document template:", error);
+      res.status(500).json({ message: "Failed to update template" });
+    }
+  });
+
+  // Delete document template (admin)
+  app.delete("/api/admin/document-templates/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await storage.deleteDocumentTemplate(req.params.id);
+      res.json({ message: "Template deleted" });
+    } catch (error) {
+      console.error("Error deleting document template:", error);
+      res.status(500).json({ message: "Failed to delete template" });
+    }
+  });
+
+  // Seed default document templates (admin)
+  app.post("/api/admin/document-templates/seed", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const templates = [
+        {
+          name: "Project Estimate",
+          type: "estimate",
+          bodyMarkdown: `# Project Estimate
+
+## Project Details
+- **Project ID:** {{submission_id}}
+- **Client:** {{client_name}}
+- **Date:** {{date}}
+
+## Scope of Work
+{{description}}
+
+## Selected Features & Add-Ons
+{{addons_list}}
+
+## Pricing Summary
+- **Base Range:** ${{budget_min}} - ${{budget_max}}
+- **Add-Ons Total:** ${{addons_total}}
+- **Estimated Total:** ${{total_min}} - ${{total_max}}
+
+## Payment Schedule
+1. **Deposit (30%):** Due upon approval
+2. **Midpoint (40%):** Due when solution is proposed
+3. **Final (30%):** Due upon completion
+
+## Timeline
+Estimated delivery: {{timeline}}
+
+---
+*This estimate is valid for 30 days from the date above.*`,
+          version: 1,
+          isActive: true,
+          requiresSignature: false,
+        },
+        {
+          name: "Service Contract",
+          type: "contract",
+          content: `# SERVICE CONTRACT
+
+**Contract ID:** {{document_id}}
+**Date:** {{date}}
+
+## PARTIES
+This Service Contract ("Contract") is entered into between:
+
+**Service Provider:** SolveForge
+**Client:** {{client_name}} ("Client")
+
+## PROJECT DESCRIPTION
+{{description}}
+
+## DELIVERABLES
+{{addons_list}}
+
+## COMPENSATION
+- **Total Project Value:** ${{total_min}} - ${{total_max}}
+- **Deposit (30%):** ${{deposit_amount}} due upon signing
+- **Midpoint (40%):** ${{midpoint_amount}} due upon solution proposal
+- **Final (30%):** ${{final_amount}} due upon completion
+
+## TIMELINE
+Estimated completion: {{timeline}} from deposit receipt.
+
+## TERMS AND CONDITIONS
+1. **Scope Changes:** Any changes to the project scope will require a written amendment.
+2. **Revisions:** Includes up to 2 rounds of revisions. Additional revisions billed at agreed hourly rate.
+3. **Intellectual Property:** Upon full payment, all deliverables become Client property.
+4. **Confidentiality:** Both parties agree to maintain confidentiality of proprietary information.
+5. **Cancellation:** Either party may cancel with 14 days written notice.
+
+## SIGNATURES
+
+**Client Signature:** ___________________
+**Date:** ___________________
+
+**Service Provider:** ___________________
+**Date:** ___________________
+
+---
+*By signing above, both parties agree to the terms outlined in this contract.*`,
+          version: 1,
+          isActive: true,
+          requiresSignature: true,
+        },
+        {
+          name: "Terms of Service",
+          type: "terms",
+          content: `# TERMS OF SERVICE
+
+**Last Updated:** {{date}}
+
+## 1. ACCEPTANCE OF TERMS
+By using SolveForge services, you agree to these Terms of Service.
+
+## 2. SERVICES
+We provide custom software development and problem-solving services as described in individual project contracts.
+
+## 3. USER RESPONSIBILITIES
+- Provide accurate project information
+- Respond to communications in a timely manner
+- Make payments according to agreed schedules
+
+## 4. PAYMENT TERMS
+- Milestone-based payment structure (30/40/30)
+- Payments are non-refundable once work has begun
+- Payment processed via Stripe or cryptocurrency
+
+## 5. INTELLECTUAL PROPERTY
+Upon full payment, all custom work becomes client property.
+
+## 6. LIMITATION OF LIABILITY
+Our liability is limited to the total amount paid for services.
+
+## 7. DISPUTE RESOLUTION
+Disputes will be resolved through good-faith negotiation.
+
+## 8. MODIFICATIONS
+We may update these terms with notice to active clients.
+
+---
+*By proceeding with our services, you acknowledge acceptance of these terms.*`,
+          version: 1,
+          isActive: true,
+          requiresSignature: false,
+        },
+      ];
+
+      for (const template of templates) {
+        await storage.createDocumentTemplate(template);
+      }
+
+      res.json({ message: "Default document templates seeded", count: templates.length });
+    } catch (error) {
+      console.error("Error seeding document templates:", error);
+      res.status(500).json({ message: "Failed to seed templates" });
+    }
+  });
+
+  // ============ DOCUMENT ROUTES ============
+
+  // Get documents for a submission
+  app.get("/api/submissions/:id/documents", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const submission = await storage.getSubmission(req.params.id);
+      
+      if (!submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+      
+      if (submission.userId !== userId && !ADMIN_USER_IDS.has(userId)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const documents = await storage.getDocumentsBySubmission(req.params.id);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  // Get single document
+  app.get("/api/documents/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const document = await storage.getDocument(req.params.id);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      // Check access via submission
+      const submission = await storage.getSubmission(document.submissionId);
+      if (!submission || (submission.userId !== userId && !ADMIN_USER_IDS.has(userId))) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      // Log view event
+      await storage.createDocumentAuditLog({
+        documentId: document.id,
+        action: "viewed",
+        performedBy: userId,
+        metadata: { ip: req.ip },
+      });
+      
+      // Update status to viewed if pending
+      if (document.status === "sent") {
+        await storage.updateDocument(document.id, { status: "viewed" });
+      }
+      
+      res.json(document);
+    } catch (error) {
+      console.error("Error fetching document:", error);
+      res.status(500).json({ message: "Failed to fetch document" });
+    }
+  });
+
+  // Create document from template (admin)
+  app.post("/api/admin/submissions/:id/documents", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const submission = await storage.getSubmission(req.params.id);
+      if (!submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+      
+      const { templateId, type } = req.body;
+      
+      // Get template if provided
+      let content = req.body.content || "";
+      let templateName = req.body.name || "Document";
+      
+      if (templateId) {
+        const template = await storage.getDocumentTemplate(templateId);
+        if (template) {
+          content = template.content;
+          templateName = template.name;
+        }
+      }
+      
+      // Get add-ons for variable substitution
+      const addons = await storage.getSubmissionAddOnsWithDetails(req.params.id);
+      const addonsTotal = addons.reduce((sum, a) => sum + (a.priceMin || 0), 0);
+      const addonsList = addons.map(a => `- ${a.itemName}: $${a.priceMin} - $${a.priceMax}`).join("\n");
+      
+      const budgetMin = submission.budgetMin || 0;
+      const budgetMax = submission.budgetMax || 0;
+      const totalMin = budgetMin + addonsTotal;
+      const totalMax = budgetMax + addons.reduce((sum, a) => sum + (a.priceMax || 0), 0);
+      
+      // Replace template variables
+      const renderedContent = content
+        .replace(/\{\{submission_id\}\}/g, submission.id)
+        .replace(/\{\{document_id\}\}/g, "DOC-" + Date.now())
+        .replace(/\{\{client_name\}\}/g, submission.contactName || "Client")
+        .replace(/\{\{date\}\}/g, new Date().toLocaleDateString())
+        .replace(/\{\{description\}\}/g, submission.description || "")
+        .replace(/\{\{addons_list\}\}/g, addonsList || "No add-ons selected")
+        .replace(/\{\{budget_min\}\}/g, budgetMin.toString())
+        .replace(/\{\{budget_max\}\}/g, budgetMax.toString())
+        .replace(/\{\{addons_total\}\}/g, addonsTotal.toString())
+        .replace(/\{\{total_min\}\}/g, totalMin.toString())
+        .replace(/\{\{total_max\}\}/g, totalMax.toString())
+        .replace(/\{\{deposit_amount\}\}/g, (totalMin * 0.3).toFixed(0))
+        .replace(/\{\{midpoint_amount\}\}/g, (totalMin * 0.4).toFixed(0))
+        .replace(/\{\{final_amount\}\}/g, (totalMin * 0.3).toFixed(0))
+        .replace(/\{\{timeline\}\}/g, submission.timeline || "To be determined");
+      
+      const document = await storage.createDocument({
+        submissionId: req.params.id,
+        templateId: templateId || null,
+        type: type || "estimate",
+        title: templateName,
+        content: renderedContent,
+        status: "draft",
+      });
+      
+      // Log creation
+      await storage.createDocumentAuditLog({
+        documentId: document.id,
+        action: "created",
+        performedBy: (req.user as any).claims.sub,
+      });
+      
+      res.status(201).json(document);
+    } catch (error) {
+      console.error("Error creating document:", error);
+      res.status(500).json({ message: "Failed to create document" });
+    }
+  });
+
+  // Send document to client (admin)
+  app.post("/api/admin/documents/:id/send", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const document = await storage.getDocument(req.params.id);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      const updated = await storage.updateDocument(document.id, {
+        status: "sent",
+        sentAt: new Date(),
+      });
+      
+      await storage.createDocumentAuditLog({
+        documentId: document.id,
+        action: "sent",
+        performedBy: (req.user as any).claims.sub,
+      });
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error sending document:", error);
+      res.status(500).json({ message: "Failed to send document" });
+    }
+  });
+
+  // Sign document (client)
+  app.post("/api/documents/:id/sign", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const document = await storage.getDocument(req.params.id);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      // Verify ownership
+      const submission = await storage.getSubmission(document.submissionId);
+      if (!submission || submission.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      if (document.status === "signed") {
+        return res.status(400).json({ message: "Document already signed" });
+      }
+      
+      const { signatureData, agreedToTerms } = req.body;
+      
+      if (!agreedToTerms) {
+        return res.status(400).json({ message: "You must agree to the terms" });
+      }
+      
+      const updated = await storage.updateDocument(document.id, {
+        status: "signed",
+        signedAt: new Date(),
+      });
+      
+      // Create signer record
+      await storage.createDocumentSigner({
+        documentId: document.id,
+        signerName: submission.contactName || "Client",
+        signerEmail: submission.contactEmail || "",
+        signerRole: "client",
+        status: "signed",
+        signedAt: new Date(),
+        signatureData: signatureData || null,
+        ipAddress: req.ip,
+      });
+      
+      await storage.createDocumentAuditLog({
+        documentId: document.id,
+        action: "signed",
+        performedBy: userId,
+        metadata: { ip: req.ip, userAgent: req.get("User-Agent") },
+      });
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error signing document:", error);
+      res.status(500).json({ message: "Failed to sign document" });
+    }
+  });
+
+  // Check if contract is signed (for payment gates)
+  app.get("/api/submissions/:id/contract-status", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const submission = await storage.getSubmission(req.params.id);
+      
+      if (!submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+      
+      if (submission.userId !== userId && !ADMIN_USER_IDS.has(userId)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const signedContract = await storage.getSignedContractBySubmission(req.params.id);
+      
+      res.json({
+        hasSignedContract: !!signedContract,
+        contractId: signedContract?.id || null,
+        signedAt: signedContract?.signedAt || null,
+      });
+    } catch (error) {
+      console.error("Error checking contract status:", error);
+      res.status(500).json({ message: "Failed to check contract status" });
+    }
+  });
+
+  // Get document audit logs (admin)
+  app.get("/api/admin/documents/:id/audit-logs", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const logs = await storage.getDocumentAuditLogs(req.params.id);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching audit logs:", error);
+      res.status(500).json({ message: "Failed to fetch audit logs" });
+    }
+  });
+
   return httpServer;
 }
