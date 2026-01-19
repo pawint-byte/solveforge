@@ -161,6 +161,15 @@ Submissions follow this status progression:
 - `GET /api/submissions/:id/contract-status` - Check if contract is signed
 - `GET /api/admin/documents/:id/audit-logs` - Get document audit trail (admin)
 
+### HeyGen Video Generation
+- `GET /api/heygen/available` - Check if HeyGen API is configured
+- `GET /api/admin/heygen/avatars` - List available avatars (admin)
+- `GET /api/admin/heygen/voices` - List available voices (admin)
+- `POST /api/admin/heygen/generate` - Generate video from URL and script (admin)
+- `GET /api/admin/heygen/video/:videoId` - Check video generation status (admin)
+- `POST /api/admin/heygen/create-avatar-video` - Create avatar video with specific settings (admin)
+- `POST /api/admin/heygen/create-talking-photo` - Create talking photo video (admin)
+
 ## Admin Configuration
 
 To grant admin access, add user IDs to the `ADMIN_USER_IDS` set in `server/routes.ts`:
