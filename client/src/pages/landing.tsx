@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare } from "lucide-react";
+import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp } from "lucide-react";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { SocialShareButtons } from "@/components/social-share";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -146,8 +146,110 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
+      {/* Portfolio Section - Other Replit Apps */}
       <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Portfolio</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Check out other apps we've built to see our capabilities in action
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a 
+              href="https://kinship-chronicle--pawint.replit.app" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-kinship"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
+                    <Users className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    Kinship Chronicle
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A family tree and genealogy app to document and preserve your family history across generations.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+            <a 
+              href="https://replit.com/@pawint/App-Hub" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-apphub"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+                    <Sparkles className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    App Hub
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A centralized hub for discovering and accessing multiple applications from a single dashboard.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+            <a 
+              href="https://replit.com/@pawint/Glam-Market" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-glammarket"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center mb-4">
+                    <ShoppingBag className="w-6 h-6 text-pink-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    Glam Market
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A stylish e-commerce marketplace for beauty and fashion products with a modern shopping experience.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+            <a 
+              href="https://replit.com/@pawint/DCA-Portfolio" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-dca"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mb-4">
+                    <TrendingUp className="w-6 h-6 text-green-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    DCA Portfolio
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Track and manage dollar-cost averaging investments with portfolio analytics and performance insights.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-20 px-6 bg-muted/30">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {t('newsletter.title')}
@@ -160,7 +262,7 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-muted/30">
+      <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             {t('cta.title')}
