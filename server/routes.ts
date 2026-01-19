@@ -45,13 +45,22 @@ export async function registerRoutes(
       
       const submission = await storage.createSubmission(data);
       
-      // Save selected add-ons if provided
+      // Save selected add-ons if provided - validate and use server-side pricing
       if (addOns && Array.isArray(addOns)) {
         for (const addon of addOns) {
+          if (!addon.itemId) continue;
+          
+          // Validate item exists and get server-side pricing
+          const addOnItem = await storage.getAddOnItem(addon.itemId);
+          if (!addOnItem || !addOnItem.isActive) {
+            console.warn(`Invalid or inactive add-on item: ${addon.itemId}`);
+            continue;
+          }
+          
           await storage.createSubmissionAddOn({
             submissionId: submission.id,
             addOnItemId: addon.itemId,
-            priceQuoted: addon.priceMin || 0,
+            priceQuoted: addOnItem.priceMin, // Use server-side minimum price
             customDescription: addon.customDescription,
           });
         }
@@ -785,7 +794,7 @@ export async function registerRoutes(
     }
   });
 
-  // Get add-ons for a submission
+  // Get add-ons for a submission (with item details)
   app.get("/api/submissions/:id/addons", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -799,7 +808,7 @@ export async function registerRoutes(
         return res.status(403).json({ message: "Access denied" });
       }
       
-      const addons = await storage.getSubmissionAddOns(req.params.id);
+      const addons = await storage.getSubmissionAddOnsWithDetails(req.params.id);
       res.json(addons);
     } catch (error) {
       console.error("Error fetching submission add-ons:", error);

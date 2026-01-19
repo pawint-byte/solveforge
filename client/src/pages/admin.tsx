@@ -6,15 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, Zap, Clock, CheckCircle, AlertCircle, 
-  FileText, LogOut, Loader2, Users, DollarSign, TrendingUp
+  FileText, LogOut, Loader2, Users, DollarSign, TrendingUp, Package
 } from "lucide-react";
 import type { Submission } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
+import { AdminAddOnsManager } from "@/components/admin-addons-manager";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   pending: { label: "Pending Review", variant: "secondary" },
@@ -197,83 +199,103 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        {/* Submissions Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>All Submissions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              </div>
-            ) : submissions.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No submissions yet</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Title</th>
-                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Category</th>
-                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Budget</th>
-                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Timeline</th>
-                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Date</th>
-                      <th className="text-right py-3 px-4 font-medium text-muted-foreground">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {submissions.map(submission => {
-                      const status = statusConfig[submission.status] || statusConfig.pending;
-                      return (
-                        <tr key={submission.id} className="border-b hover:bg-muted/50" data-testid={`row-submission-${submission.id}`}>
-                          <td className="py-3 px-4">
-                            <div className="font-medium max-w-[200px] truncate">{submission.title}</div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[submission.category]}`}>
-                              {submission.category}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-sm">
-                            ${submission.budgetMin}-${submission.budgetMax}
-                          </td>
-                          <td className="py-3 px-4 text-sm text-muted-foreground">
-                            {submission.timeline.replace(/_/g, " ")}
-                          </td>
-                          <td className="py-3 px-4">
-                            <Badge variant={status.variant}>{status.label}</Badge>
-                          </td>
-                          <td className="py-3 px-4 text-sm text-muted-foreground">
-                            {new Date(submission.createdAt!).toLocaleDateString()}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setSelectedSubmission(submission);
-                                setNewStatus(submission.status);
-                                setAdminNotes(submission.adminNotes || "");
-                              }}
-                              data-testid={`button-edit-${submission.id}`}
-                            >
-                              Manage
-                            </Button>
-                          </td>
+        {/* Tabs for Submissions and Add-Ons */}
+        <Tabs defaultValue="submissions" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="submissions" className="gap-2" data-testid="tab-submissions">
+              <FileText className="w-4 h-4" />
+              Submissions
+            </TabsTrigger>
+            <TabsTrigger value="addons" className="gap-2" data-testid="tab-addons">
+              <Package className="w-4 h-4" />
+              Add-Ons
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="submissions">
+            {/* Submissions Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>All Submissions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  </div>
+                ) : submissions.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No submissions yet</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Title</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Category</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Budget</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Timeline</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Date</th>
+                          <th className="text-right py-3 px-4 font-medium text-muted-foreground">Actions</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                      </thead>
+                      <tbody>
+                        {submissions.map(submission => {
+                          const status = statusConfig[submission.status] || statusConfig.pending;
+                          return (
+                            <tr key={submission.id} className="border-b hover:bg-muted/50" data-testid={`row-submission-${submission.id}`}>
+                              <td className="py-3 px-4">
+                                <div className="font-medium max-w-[200px] truncate">{submission.title}</div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[submission.category]}`}>
+                                  {submission.category}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-sm">
+                                ${submission.budgetMin}-${submission.budgetMax}
+                              </td>
+                              <td className="py-3 px-4 text-sm text-muted-foreground">
+                                {submission.timeline.replace(/_/g, " ")}
+                              </td>
+                              <td className="py-3 px-4">
+                                <Badge variant={status.variant}>{status.label}</Badge>
+                              </td>
+                              <td className="py-3 px-4 text-sm text-muted-foreground">
+                                {new Date(submission.createdAt!).toLocaleDateString()}
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSelectedSubmission(submission);
+                                    setNewStatus(submission.status);
+                                    setAdminNotes(submission.adminNotes || "");
+                                  }}
+                                  data-testid={`button-edit-${submission.id}`}
+                                >
+                                  Manage
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="addons">
+            <AdminAddOnsManager />
+          </TabsContent>
+        </Tabs>
 
         {/* Edit Modal */}
         {selectedSubmission && (

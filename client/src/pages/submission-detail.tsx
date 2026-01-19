@@ -10,9 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, Zap, Clock, CheckCircle, AlertCircle, 
-  FileText, Send, Loader2, MessageSquare, CreditCard, Bitcoin
+  FileText, Send, Loader2, MessageSquare, CreditCard, Bitcoin, Puzzle
 } from "lucide-react";
-import type { Submission, Message, Payment } from "@shared/schema";
+import type { Submission, Message, Payment, SubmissionAddOn } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
 
@@ -73,6 +73,11 @@ export default function SubmissionDetail() {
 
   const { data: cryptoAvailable } = useQuery<{ available: boolean }>({
     queryKey: ["/api/crypto/available"],
+  });
+
+  const { data: submissionAddOns = [] } = useQuery<SubmissionAddOn[]>({
+    queryKey: ["/api/submissions", id, "addons"],
+    enabled: !!submission,
   });
 
   const handleCardPayment = async () => {
@@ -304,6 +309,35 @@ export default function SubmissionDetail() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Selected Add-Ons */}
+            {submissionAddOns.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Puzzle className="w-5 h-5 text-primary" />
+                    Selected Add-Ons
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {submissionAddOns.map((addon: any) => (
+                      <div key={addon.id} className="flex items-start justify-between p-2 rounded-lg bg-muted/50 gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{addon.itemName || "Add-On"}</p>
+                          {addon.timelineLabel && (
+                            <p className="text-xs text-muted-foreground">{addon.timelineLabel}</p>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          ${addon.priceMin || 0} - ${addon.priceMax || 0}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Payment Section - Show when approved and deposit not paid */}
             {submission.status === "approved" && !payments.some(p => p.milestoneNumber === 1 && p.status === "completed") && (

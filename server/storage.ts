@@ -72,7 +72,9 @@ export interface IStorage {
   // Submission Add-Ons
   createSubmissionAddOn(data: InsertSubmissionAddOn): Promise<SubmissionAddOn>;
   getSubmissionAddOns(submissionId: string): Promise<SubmissionAddOn[]>;
+  getSubmissionAddOnsWithDetails(submissionId: string): Promise<(SubmissionAddOn & { itemName: string; itemDescription: string | null; priceMin: number; priceMax: number; timelineLabel: string | null })[]>;
   deleteSubmissionAddOns(submissionId: string): Promise<void>;
+  getAddOnItem(id: string): Promise<AddOnItem | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -305,6 +307,38 @@ export class DatabaseStorage implements IStorage {
 
   async getSubmissionAddOns(submissionId: string): Promise<SubmissionAddOn[]> {
     return db.select().from(submissionAddOns).where(eq(submissionAddOns.submissionId, submissionId));
+  }
+
+  async getSubmissionAddOnsWithDetails(submissionId: string): Promise<(SubmissionAddOn & { itemName: string; itemDescription: string | null; priceMin: number; priceMax: number; timelineLabel: string | null })[]> {
+    const results = await db
+      .select({
+        id: submissionAddOns.id,
+        submissionId: submissionAddOns.submissionId,
+        addOnItemId: submissionAddOns.addOnItemId,
+        priceQuoted: submissionAddOns.priceQuoted,
+        customDescription: submissionAddOns.customDescription,
+        createdAt: submissionAddOns.createdAt,
+        itemName: addOnItems.name,
+        itemDescription: addOnItems.description,
+        priceMin: addOnItems.priceMin,
+        priceMax: addOnItems.priceMax,
+        timelineLabel: addOnItems.timelineLabel,
+      })
+      .from(submissionAddOns)
+      .leftJoin(addOnItems, eq(submissionAddOns.addOnItemId, addOnItems.id))
+      .where(eq(submissionAddOns.submissionId, submissionId));
+    
+    return results.map(r => ({
+      ...r,
+      itemName: r.itemName || "Unknown Add-On",
+      priceMin: r.priceMin || 0,
+      priceMax: r.priceMax || 0,
+    }));
+  }
+
+  async getAddOnItem(id: string): Promise<AddOnItem | undefined> {
+    const [result] = await db.select().from(addOnItems).where(eq(addOnItems.id, id));
+    return result;
   }
 
   async deleteSubmissionAddOns(submissionId: string): Promise<void> {

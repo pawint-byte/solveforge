@@ -58,21 +58,6 @@ export default function SubmitPage() {
   const [budgetRange, setBudgetRange] = useState([100, 500]);
   const [selectedAddOns, setSelectedAddOns] = useState<SelectedAddOn[]>([]);
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({ title: "Unauthorized", description: "Please log in to submit a problem.", variant: "destructive" });
-      setTimeout(() => { window.location.href = "/api/login"; }, 500);
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  if (isLoading || !isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -123,6 +108,21 @@ export default function SubmitPage() {
       });
     },
   });
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({ title: "Unauthorized", description: "Please log in to submit a problem.", variant: "destructive" });
+      setTimeout(() => { window.location.href = "/api/login"; }, 500);
+    }
+  }, [isAuthenticated, isLoading, toast]);
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const onSubmit = (data: FormData) => {
     createSubmission.mutate({

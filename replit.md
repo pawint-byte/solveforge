@@ -68,6 +68,9 @@ shared/                     # Shared types and schemas
 - **newsletter_subscribers**: Email subscribers for marketing
 - **referrals**: Referral tracking with unique codes
 - **user_credits**: Credit/rewards system for referrals
+- **add_on_categories**: Admin-configurable add-on categories
+- **add_on_items**: Configurable add-on items with price ranges and timelines
+- **submission_add_ons**: Junction table linking submissions to selected add-ons
 
 ### Status Workflow
 Submissions follow this status progression:
@@ -128,6 +131,17 @@ Submissions follow this status progression:
 
 ### Affiliate Marketing
 - `POST /api/affiliate/conversion` - Track affiliate conversion (ShareASale prep)
+
+### Add-Ons Builder
+- `GET /api/addons` - Get all add-on categories with items (public)
+- `GET /api/submissions/:id/addons` - Get add-ons for a submission
+- `POST /api/admin/addons/seed` - Seed default add-ons (admin)
+- `POST /api/admin/addons/categories` - Create add-on category (admin)
+- `PATCH /api/admin/addons/categories/:id` - Update category (admin)
+- `DELETE /api/admin/addons/categories/:id` - Delete category (admin)
+- `POST /api/admin/addons/items` - Create add-on item (admin)
+- `PATCH /api/admin/addons/items/:id` - Update item (admin)
+- `DELETE /api/admin/addons/items/:id` - Delete item (admin)
 
 ## Admin Configuration
 
@@ -211,6 +225,17 @@ The application runs via the "Start application" workflow which executes `npm ru
 - ShareASale integration hooks
 - Conversion tracking structure
 - Session-based affiliate attribution
+
+### Menu-Driven Add-Ons Builder
+- Admin-configurable add-on categories and items
+- Default add-ons seeded with 6 categories: Authentication & Security, Payments & E-commerce, Analytics & SEO, UI/UX Enhancements, Integrations, Custom
+- ~20 pre-configured items with price ranges and timelines (e.g., Social Login $200-300, Stripe Integration $400-700)
+- Real-time pricing calculator showing min/max totals and estimated delivery time
+- Collapsible category menu with search/filter functionality
+- Popular badges and tooltips for user guidance
+- Add-ons automatically saved to submission when created
+- Admin interface for full CRUD operations on categories and items
+- Key components: `AddOnsBuilder` (user-facing), `AdminAddOnsManager` (admin CRUD interface)
 
 ## Payment Structure
 
