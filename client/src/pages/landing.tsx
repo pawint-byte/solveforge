@@ -179,7 +179,7 @@ export default function Landing() {
               </Card>
             </a>
             <a 
-              href="https://replit.com/@pawint/App-Hub" 
+              href="https://app-hub--pawint.replit.app" 
               target="_blank" 
               rel="noopener noreferrer"
               className="block"
@@ -201,7 +201,7 @@ export default function Landing() {
               </Card>
             </a>
             <a 
-              href="https://replit.com/@pawint/Glam-Market" 
+              href="https://glam-market--pawint.replit.app" 
               target="_blank" 
               rel="noopener noreferrer"
               className="block"
@@ -223,7 +223,7 @@ export default function Landing() {
               </Card>
             </a>
             <a 
-              href="https://replit.com/@pawint/DCA-Portfolio" 
+              href="https://dca-portfolio--pawint.replit.app" 
               target="_blank" 
               rel="noopener noreferrer"
               className="block"
@@ -245,7 +245,7 @@ export default function Landing() {
               </Card>
             </a>
             <a 
-              href="https://replit.com/@pawint/Secure-Tasker" 
+              href="https://secure-tasker--pawint.replit.app" 
               target="_blank" 
               rel="noopener noreferrer"
               className="block"
