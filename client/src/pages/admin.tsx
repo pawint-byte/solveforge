@@ -11,13 +11,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, Zap, Clock, CheckCircle, AlertCircle, 
-  FileText, LogOut, Loader2, Users, DollarSign, TrendingUp, Package, FileSignature
+  FileText, LogOut, Loader2, Users, DollarSign, TrendingUp, Package, FileSignature, Video
 } from "lucide-react";
 import type { Submission } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
 import { AdminAddOnsManager } from "@/components/admin-addons-manager";
 import { AdminDocumentsManager } from "@/components/admin-documents-manager";
+import { AdminHeyGenManager } from "@/components/admin-heygen-manager";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   pending: { label: "Pending Review", variant: "secondary" },
@@ -215,6 +216,10 @@ export default function AdminDashboard() {
               <FileSignature className="w-4 h-4" />
               Documents
             </TabsTrigger>
+            <TabsTrigger value="videos" className="gap-2" data-testid="tab-videos">
+              <Video className="w-4 h-4" />
+              Videos
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="submissions">
@@ -303,6 +308,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="documents">
             <AdminDocumentsManager />
+          </TabsContent>
+
+          <TabsContent value="videos">
+            <AdminHeyGenManager />
           </TabsContent>
         </Tabs>
 
