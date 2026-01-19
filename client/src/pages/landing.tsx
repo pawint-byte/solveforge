@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, CheckSquare } from "lucide-react";
+import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, CheckSquare, Mail } from "lucide-react";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { SocialShareButtons } from "@/components/social-share";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -316,6 +316,14 @@ export default function Landing() {
             <Zap className="w-5 h-5 text-primary" />
             <span className="font-semibold">SolveForge</span>
           </div>
+          <a 
+            href="mailto:pawint@me.com" 
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            data-testid="link-email-contact"
+          >
+            <Mail className="w-4 h-4" />
+            pawint@me.com
+          </a>
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} SolveForge. {t('footer.copyright')}
           </p>
