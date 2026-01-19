@@ -1,10 +1,14 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare } from "lucide-react";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { SocialShareButtons } from "@/components/social-share";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export default function Landing() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -16,9 +20,10 @@ export default function Landing() {
             </div>
             <span className="text-xl font-bold">SolveForge</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <a href="/api/login">
-              <Button data-testid="button-login">Get Started</Button>
+              <Button data-testid="button-login">{t('nav.getStarted')}</Button>
             </a>
           </div>
         </div>
@@ -30,28 +35,27 @@ export default function Landing() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Turn Your <span className="text-primary">Problems</span> Into{" "}
-                <span className="text-primary">Solutions</span>
+                {t('hero.title1')} <span className="text-primary">{t('hero.problems')}</span> {t('hero.into')}{" "}
+                <span className="text-primary">{t('hero.solutions')}</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Submit your technical challenges, business ideas, or creative projects. 
-                Get expert solutions tailored to your needs with transparent pricing and timelines.
+                {t('hero.subtitle')}
               </p>
               <div className="flex flex-wrap gap-4">
                 <a href="/api/login">
                   <Button size="lg" className="gap-2" data-testid="button-get-started">
-                    Submit Your Problem <ArrowRight className="w-5 h-5" />
+                    {t('hero.submitProblem')} <ArrowRight className="w-5 h-5" />
                   </Button>
                 </a>
               </div>
               <div className="flex items-center gap-6 pt-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Shield className="w-4 h-4 text-green-500" />
-                  <span>Secure & Private</span>
+                  <span>{t('hero.securePrivate')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <DollarSign className="w-4 h-4 text-green-500" />
-                  <span>Flexible Pricing</span>
+                  <span>{t('hero.flexiblePricing')}</span>
                 </div>
               </div>
             </div>
@@ -67,7 +71,7 @@ export default function Landing() {
                         <h3 className="font-semibold mb-1">E-commerce Integration</h3>
                         <p className="text-sm text-muted-foreground">Need help integrating payment systems...</p>
                         <div className="flex items-center gap-3 mt-3">
-                          <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">Tech</span>
+                          <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">{t('submit.categories.tech')}</span>
                           <span className="text-xs text-muted-foreground">$500-$2000</span>
                         </div>
                       </div>
@@ -82,7 +86,7 @@ export default function Landing() {
                         <h3 className="font-semibold mb-1">Marketing Strategy</h3>
                         <p className="text-sm text-muted-foreground">Looking for social media growth...</p>
                         <div className="flex items-center gap-3 mt-3">
-                          <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-500">Business</span>
+                          <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-500">{t('submit.categories.business')}</span>
                           <span className="text-xs text-muted-foreground">$200-$800</span>
                         </div>
                       </div>
@@ -99,9 +103,9 @@ export default function Landing() {
       <section className="py-20 px-6 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('howItWorks.title')}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              A simple, transparent process to get your problems solved
+              {t('howItWorks.subtitle')}
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -110,9 +114,9 @@ export default function Landing() {
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
                   <Lightbulb className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">1. Describe Your Problem</h3>
+                <h3 className="text-xl font-semibold mb-3">{t('howItWorks.step1Title')}</h3>
                 <p className="text-muted-foreground">
-                  Submit a detailed description of what you need solved, your timeline, and budget range.
+                  {t('howItWorks.step1Desc')}
                 </p>
               </CardContent>
             </Card>
@@ -121,9 +125,9 @@ export default function Landing() {
                 <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-6">
                   <Clock className="w-8 h-8 text-amber-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">2. Get a Proposal</h3>
+                <h3 className="text-xl font-semibold mb-3">{t('howItWorks.step2Title')}</h3>
                 <p className="text-muted-foreground">
-                  Receive a detailed proposal with scope, timeline, and pricing for your review.
+                  {t('howItWorks.step2Desc')}
                 </p>
               </CardContent>
             </Card>
@@ -132,9 +136,9 @@ export default function Landing() {
                 <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto mb-6">
                   <DollarSign className="w-8 h-8 text-green-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">3. Get Your Solution</h3>
+                <h3 className="text-xl font-semibold mb-3">{t('howItWorks.step3Title')}</h3>
                 <p className="text-muted-foreground">
-                  Approve the proposal, make milestone payments, and receive your custom solution.
+                  {t('howItWorks.step3Desc')}
                 </p>
               </CardContent>
             </Card>
@@ -146,10 +150,10 @@ export default function Landing() {
       <section className="py-20 px-6">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Stay Updated
+            {t('newsletter.title')}
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Get tips on problem-solving, success stories, and platform updates delivered to your inbox.
+            {t('newsletter.subtitle')}
           </p>
           <NewsletterSignup />
         </div>
@@ -159,18 +163,18 @@ export default function Landing() {
       <section className="py-20 px-6 bg-muted/30">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Get Your Problem Solved?
+            {t('cta.title')}
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Join others who have successfully turned their challenges into solutions.
+            {t('cta.subtitle')}
           </p>
           <a href="/api/login">
             <Button size="lg" className="gap-2" data-testid="button-cta-submit">
-              Submit Your Problem <ArrowRight className="w-5 h-5" />
+              {t('hero.submitProblem')} <ArrowRight className="w-5 h-5" />
             </Button>
           </a>
           <div className="mt-8">
-            <p className="text-sm text-muted-foreground mb-4">Share SolveForge with others</p>
+            <p className="text-sm text-muted-foreground mb-4">{t('cta.shareWith')}</p>
             <div className="flex justify-center">
               <SocialShareButtons 
                 title="SolveForge - Crowdsourcing Problem Solving" 
@@ -189,7 +193,7 @@ export default function Landing() {
             <span className="font-semibold">SolveForge</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} SolveForge. All rights reserved.
+            &copy; {new Date().getFullYear()} SolveForge. {t('footer.copyright')}
           </p>
         </div>
       </footer>

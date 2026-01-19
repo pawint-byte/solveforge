@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "getStarted": "Comenzar",
+    "login": "Iniciar Sesión",
+    "dashboard": "Panel",
+    "submit": "Enviar Problema",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title1": "Convierte Tus",
+    "problems": "Problemas",
+    "into": "En",
+    "solutions": "Soluciones",
+    "subtitle": "Envía tus desafíos técnicos, ideas de negocio o proyectos creativos. Obtén soluciones expertas adaptadas a tus necesidades con precios y plazos transparentes.",
+    "submitProblem": "Enviar Tu Problema",
+    "securePrivate": "Seguro y Privado",
+    "flexiblePricing": "Precios Flexibles"
+  },
+  "howItWorks": {
+    "title": "Cómo Funciona",
+    "subtitle": "Un proceso simple y transparente para resolver tus problemas",
+    "step1Title": "1. Describe Tu Problema",
+    "step1Desc": "Envía una descripción detallada de lo que necesitas resolver, tu plazo y rango de presupuesto.",
+    "step2Title": "2. Recibe una Propuesta",
+    "step2Desc": "Recibe una propuesta detallada con alcance, plazo y precios para tu revisión.",
+    "step3Title": "3. Obtén Tu Solución",
+    "step3Desc": "Aprueba la propuesta, realiza pagos por hitos y recibe tu solución personalizada."
+  },
+  "newsletter": {
+    "title": "Mantente Actualizado",
+    "subtitle": "Recibe consejos sobre resolución de problemas, historias de éxito y actualizaciones de la plataforma en tu correo.",
+    "placeholder": "Ingresa tu correo",
+    "subscribe": "Suscribirse",
+    "subscribing": "Suscribiendo...",
+    "success": "¡Te has suscrito exitosamente a nuestro boletín!",
+    "error": "Error al suscribirse. Por favor intenta de nuevo."
+  },
+  "cta": {
+    "title": "¿Listo para Resolver Tu Problema?",
+    "subtitle": "Únete a otros que han convertido exitosamente sus desafíos en soluciones.",
+    "shareWith": "Comparte SolveForge con otros"
+  },
+  "footer": {
+    "copyright": "Todos los derechos reservados."
+  },
+  "dashboard": {
+    "title": "Mis Envíos",
+    "noSubmissions": "Sin envíos aún",
+    "startFirst": "¿Listo para comenzar? ¡Envía tu primer problema!",
+    "submitNew": "Enviar Nuevo Problema",
+    "viewDetails": "Ver Detalles",
+    "budget": "Presupuesto"
+  },
+  "submit": {
+    "title": "Enviar Tu Problema",
+    "subtitle": "Describe tu desafío y te ayudaremos a encontrar una solución",
+    "problemTitle": "Título del Problema",
+    "problemTitlePlaceholder": "Título breve para tu problema",
+    "category": "Categoría",
+    "selectCategory": "Selecciona una categoría",
+    "categories": {
+      "tech": "Tecnología",
+      "business": "Negocios",
+      "creative": "Creativo",
+      "other": "Otro"
+    },
+    "description": "Descripción",
+    "descriptionPlaceholder": "Describe tu problema en detalle. Incluye lo que has intentado, qué desafíos enfrentas y qué resultado buscas.",
+    "budgetRange": "Rango de Presupuesto",
+    "budgetPlaceholder": "ej., $500-$2000",
+    "timeline": "Plazo",
+    "timelinePlaceholder": "ej., 2 semanas, 1 mes",
+    "submitButton": "Enviar Problema",
+    "submitting": "Enviando...",
+    "success": "¡Tu problema ha sido enviado exitosamente!",
+    "error": "Error al enviar. Por favor intenta de nuevo."
+  },
+  "status": {
+    "pending": "Pendiente de Revisión",
+    "in_review": "En Revisión",
+    "approved": "Aprobado",
+    "in_progress": "En Progreso",
+    "solution_proposed": "Solución Propuesta",
+    "completed": "Completado",
+    "cancelled": "Cancelado"
+  },
+  "payments": {
+    "payDeposit": "Pagar Depósito",
+    "payWithCard": "Pagar con Tarjeta",
+    "payWithCrypto": "Pagar con Cripto",
+    "deposit": "Depósito",
+    "midpoint": "Punto Medio",
+    "final": "Final",
+    "paid": "Pagado",
+    "pending": "Pendiente"
+  },
+  "messages": {
+    "title": "Mensajes",
+    "placeholder": "Escribe tu mensaje...",
+    "send": "Enviar",
+    "noMessages": "Sin mensajes aún"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "retry": "Intentar de Nuevo",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "close": "Cerrar"
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français"
+  }
+}

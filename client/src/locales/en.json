@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "getStarted": "Get Started",
+    "login": "Log In",
+    "dashboard": "Dashboard",
+    "submit": "Submit Problem",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title1": "Turn Your",
+    "problems": "Problems",
+    "into": "Into",
+    "solutions": "Solutions",
+    "subtitle": "Submit your technical challenges, business ideas, or creative projects. Get expert solutions tailored to your needs with transparent pricing and timelines.",
+    "submitProblem": "Submit Your Problem",
+    "securePrivate": "Secure & Private",
+    "flexiblePricing": "Flexible Pricing"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "A simple, transparent process to get your problems solved",
+    "step1Title": "1. Describe Your Problem",
+    "step1Desc": "Submit a detailed description of what you need solved, your timeline, and budget range.",
+    "step2Title": "2. Get a Proposal",
+    "step2Desc": "Receive a detailed proposal with scope, timeline, and pricing for your review.",
+    "step3Title": "3. Get Your Solution",
+    "step3Desc": "Approve the proposal, make milestone payments, and receive your custom solution."
+  },
+  "newsletter": {
+    "title": "Stay Updated",
+    "subtitle": "Get tips on problem-solving, success stories, and platform updates delivered to your inbox.",
+    "placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing...",
+    "success": "Successfully subscribed to our newsletter!",
+    "error": "Failed to subscribe. Please try again."
+  },
+  "cta": {
+    "title": "Ready to Get Your Problem Solved?",
+    "subtitle": "Join others who have successfully turned their challenges into solutions.",
+    "shareWith": "Share SolveForge with others"
+  },
+  "footer": {
+    "copyright": "All rights reserved."
+  },
+  "dashboard": {
+    "title": "My Submissions",
+    "noSubmissions": "No submissions yet",
+    "startFirst": "Ready to get started? Submit your first problem!",
+    "submitNew": "Submit New Problem",
+    "viewDetails": "View Details",
+    "budget": "Budget"
+  },
+  "submit": {
+    "title": "Submit Your Problem",
+    "subtitle": "Describe your challenge and we'll help you find a solution",
+    "problemTitle": "Problem Title",
+    "problemTitlePlaceholder": "Brief title for your problem",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "categories": {
+      "tech": "Technology",
+      "business": "Business",
+      "creative": "Creative",
+      "other": "Other"
+    },
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your problem in detail. Include what you've tried, what challenges you're facing, and what outcome you're looking for.",
+    "budgetRange": "Budget Range",
+    "budgetPlaceholder": "e.g., $500-$2000",
+    "timeline": "Timeline",
+    "timelinePlaceholder": "e.g., 2 weeks, 1 month",
+    "submitButton": "Submit Problem",
+    "submitting": "Submitting...",
+    "success": "Your problem has been submitted successfully!",
+    "error": "Failed to submit. Please try again."
+  },
+  "status": {
+    "pending": "Pending Review",
+    "in_review": "In Review",
+    "approved": "Approved",
+    "in_progress": "In Progress",
+    "solution_proposed": "Solution Proposed",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "payments": {
+    "payDeposit": "Pay Deposit",
+    "payWithCard": "Pay with Card",
+    "payWithCrypto": "Pay with Crypto",
+    "deposit": "Deposit",
+    "midpoint": "Midpoint",
+    "final": "Final",
+    "paid": "Paid",
+    "pending": "Pending"
+  },
+  "messages": {
+    "title": "Messages",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "noMessages": "No messages yet"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close"
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français"
+  }
+}

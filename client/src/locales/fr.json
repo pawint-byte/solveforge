@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "getStarted": "Commencer",
+    "login": "Connexion",
+    "dashboard": "Tableau de Bord",
+    "submit": "Soumettre un Problème",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title1": "Transformez Vos",
+    "problems": "Problèmes",
+    "into": "En",
+    "solutions": "Solutions",
+    "subtitle": "Soumettez vos défis techniques, idées commerciales ou projets créatifs. Obtenez des solutions expertes adaptées à vos besoins avec des prix et délais transparents.",
+    "submitProblem": "Soumettre Votre Problème",
+    "securePrivate": "Sécurisé et Privé",
+    "flexiblePricing": "Tarification Flexible"
+  },
+  "howItWorks": {
+    "title": "Comment Ça Marche",
+    "subtitle": "Un processus simple et transparent pour résoudre vos problèmes",
+    "step1Title": "1. Décrivez Votre Problème",
+    "step1Desc": "Soumettez une description détaillée de ce que vous devez résoudre, votre délai et fourchette de budget.",
+    "step2Title": "2. Recevez une Proposition",
+    "step2Desc": "Recevez une proposition détaillée avec portée, délai et tarification pour votre examen.",
+    "step3Title": "3. Obtenez Votre Solution",
+    "step3Desc": "Approuvez la proposition, effectuez des paiements par étapes et recevez votre solution personnalisée."
+  },
+  "newsletter": {
+    "title": "Restez Informé",
+    "subtitle": "Recevez des conseils sur la résolution de problèmes, des histoires de réussite et des mises à jour de la plateforme dans votre boîte mail.",
+    "placeholder": "Entrez votre email",
+    "subscribe": "S'abonner",
+    "subscribing": "Abonnement en cours...",
+    "success": "Vous êtes maintenant abonné à notre newsletter!",
+    "error": "Échec de l'abonnement. Veuillez réessayer."
+  },
+  "cta": {
+    "title": "Prêt à Résoudre Votre Problème?",
+    "subtitle": "Rejoignez ceux qui ont transformé leurs défis en solutions avec succès.",
+    "shareWith": "Partagez SolveForge avec d'autres"
+  },
+  "footer": {
+    "copyright": "Tous droits réservés."
+  },
+  "dashboard": {
+    "title": "Mes Soumissions",
+    "noSubmissions": "Aucune soumission pour le moment",
+    "startFirst": "Prêt à commencer? Soumettez votre premier problème!",
+    "submitNew": "Soumettre un Nouveau Problème",
+    "viewDetails": "Voir les Détails",
+    "budget": "Budget"
+  },
+  "submit": {
+    "title": "Soumettre Votre Problème",
+    "subtitle": "Décrivez votre défi et nous vous aiderons à trouver une solution",
+    "problemTitle": "Titre du Problème",
+    "problemTitlePlaceholder": "Titre bref pour votre problème",
+    "category": "Catégorie",
+    "selectCategory": "Sélectionnez une catégorie",
+    "categories": {
+      "tech": "Technologie",
+      "business": "Affaires",
+      "creative": "Créatif",
+      "other": "Autre"
+    },
+    "description": "Description",
+    "descriptionPlaceholder": "Décrivez votre problème en détail. Incluez ce que vous avez essayé, quels défis vous rencontrez et quel résultat vous recherchez.",
+    "budgetRange": "Fourchette de Budget",
+    "budgetPlaceholder": "ex., 500€-2000€",
+    "timeline": "Délai",
+    "timelinePlaceholder": "ex., 2 semaines, 1 mois",
+    "submitButton": "Soumettre le Problème",
+    "submitting": "Soumission en cours...",
+    "success": "Votre problème a été soumis avec succès!",
+    "error": "Échec de la soumission. Veuillez réessayer."
+  },
+  "status": {
+    "pending": "En Attente de Révision",
+    "in_review": "En Cours de Révision",
+    "approved": "Approuvé",
+    "in_progress": "En Cours",
+    "solution_proposed": "Solution Proposée",
+    "completed": "Terminé",
+    "cancelled": "Annulé"
+  },
+  "payments": {
+    "payDeposit": "Payer l'Acompte",
+    "payWithCard": "Payer par Carte",
+    "payWithCrypto": "Payer en Crypto",
+    "deposit": "Acompte",
+    "midpoint": "Mi-parcours",
+    "final": "Final",
+    "paid": "Payé",
+    "pending": "En Attente"
+  },
+  "messages": {
+    "title": "Messages",
+    "placeholder": "Tapez votre message...",
+    "send": "Envoyer",
+    "noMessages": "Aucun message pour le moment"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre",
+    "close": "Fermer"
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français"
+  }
+}
