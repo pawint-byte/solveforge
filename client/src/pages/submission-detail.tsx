@@ -52,10 +52,10 @@ export default function SubmissionDetail() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      toast({ title: "Unauthorized", description: "Please log in to view this submission.", variant: "destructive" });
+      toast({ title: t('submissionDetail.unauthorized'), description: t('submissionDetail.pleaseLogin'), variant: "destructive" });
       setTimeout(() => { window.location.href = "/api/login"; }, 500);
     }
-  }, [isAuthenticated, authLoading, toast]);
+  }, [isAuthenticated, authLoading, toast, t]);
 
   const { data: submission, isLoading } = useQuery<Submission>({
     queryKey: ["/api/submissions", id],
@@ -113,15 +113,15 @@ export default function SubmissionDetail() {
     onSuccess: () => {
       setNewMessage("");
       queryClient.invalidateQueries({ queryKey: ["/api/submissions", id, "messages"] });
-      toast({ title: "Message sent!" });
+      toast({ title: t('submissionDetail.messageSent') });
     },
     onError: (error: Error) => {
       if (isUnauthorizedError(error)) {
-        toast({ title: "Unauthorized", description: "Logging in again...", variant: "destructive" });
+        toast({ title: t('submissionDetail.unauthorized'), variant: "destructive" });
         setTimeout(() => { window.location.href = "/api/login"; }, 500);
         return;
       }
-      toast({ title: "Failed to send message", variant: "destructive" });
+      toast({ title: t('submissionDetail.failedToSend'), variant: "destructive" });
     },
   });
 
@@ -139,16 +139,19 @@ export default function SubmissionDetail() {
         <Card className="max-w-md mx-auto text-center">
           <CardContent className="pt-8">
             <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">Submission Not Found</h2>
-            <p className="text-muted-foreground mb-4">This submission doesn't exist or you don't have access.</p>
+            <h2 className="text-xl font-bold mb-2">{t('submissionDetail.notFound')}</h2>
+            <p className="text-muted-foreground mb-4">{t('submissionDetail.noAccess')}</p>
             <Link href="/dashboard">
-              <Button>Back to Dashboard</Button>
+              <Button>{t('submissionDetail.backToDashboard')}</Button>
             </Link>
           </CardContent>
         </Card>
       </div>
     );
   }
+
+  const getStatusLabel = (statusKey: string) => t(`status.${statusKey}`) || statusConfig[statusKey]?.label;
+  const getTimelineLabel = (timelineKey: string) => t(`submissionDetail.timelineLabels.${timelineKey}`) || timelineLabels[timelineKey];
 
   const status = statusConfig[submission.status] || statusConfig.pending;
   const StatusIcon = status.icon;
@@ -184,10 +187,10 @@ export default function SubmissionDetail() {
                     <div className="flex items-center gap-3 flex-wrap">
                       <Badge variant={status.variant} className="gap-1">
                         <StatusIcon className="w-3 h-3" />
-                        {status.label}
+                        {getStatusLabel(submission.status)}
                       </Badge>
                       <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[submission.category]}`}>
-                        {submission.category}
+                        {t(`submit.categories.${submission.category}`) || submission.category}
                       </span>
                     </div>
                   </div>
@@ -205,14 +208,13 @@ export default function SubmissionDetail() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="w-5 h-5" />
-                  Messages
+                  {t('messages.title')}
                 </CardTitle>
-                <CardDescription>Communication about this submission</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {messages.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">
-                    No messages yet. Start the conversation!
+                    {t('submissionDetail.noMessages')}
                   </p>
                 ) : (
                   <div className="space-y-4 max-h-[400px] overflow-y-auto">
@@ -227,7 +229,7 @@ export default function SubmissionDetail() {
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <span className="font-medium text-sm">
-                            {message.isFromAdmin ? "Admin" : "You"}
+                            {message.isFromAdmin ? t('submissionDetail.authorAdmin') : t('submissionDetail.authorYou')}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {new Date(message.createdAt!).toLocaleString()}
@@ -241,7 +243,7 @@ export default function SubmissionDetail() {
 
                 <div className="flex gap-2 pt-4 border-t">
                   <Textarea
-                    placeholder="Type your message..."
+                    placeholder={t('submissionDetail.typeMessage')}
                     value={newMessage}
                     onChange={e => setNewMessage(e.target.value)}
                     className="flex-1"
@@ -268,39 +270,35 @@ export default function SubmissionDetail() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Details</CardTitle>
+                <CardTitle>{t('submissionDetail.details')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Budget Range</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t('submissionDetail.budgetRange')}</p>
                   <p className="text-lg font-semibold">
                     ${submission.budgetMin} - ${submission.budgetMax} {submission.currency}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Timeline</p>
-                  <p className="font-medium">{timelineLabels[submission.timeline]}</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t('submissionDetail.timeline')}</p>
+                  <p className="font-medium">{getTimelineLabel(submission.timeline)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Submitted</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t('submissionDetail.submitted')}</p>
                   <p className="font-medium">
-                    {new Date(submission.createdAt!).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    {new Date(submission.createdAt!).toLocaleDateString()}
                   </p>
                 </div>
                 {submission.linkedinUrl && (
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">LinkedIn</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t('submissionDetail.linkedin')}</p>
                     <a 
                       href={submission.linkedinUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-primary hover:underline text-sm"
                     >
-                      View Profile
+                      {t('submissionDetail.viewProfile')}
                     </a>
                   </div>
                 )}
@@ -316,7 +314,7 @@ export default function SubmissionDetail() {
                     {t('payments.payDeposit')}
                   </CardTitle>
                   <CardDescription>
-                    30% deposit required to start work
+                    {t('payments.depositRequired')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -363,14 +361,14 @@ export default function SubmissionDetail() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <StatusIcon className={`w-5 h-5 ${status.color}`} />
-                  Status Timeline
+                  {t('submissionDetail.statusTimeline')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-green-500" />
-                    <span className="text-sm">Submitted</span>
+                    <span className="text-sm">{t('submissionDetail.submitted')}</span>
                   </div>
                   <div className={`flex items-center gap-3 ${
                     ["pending"].includes(submission.status) ? "opacity-40" : ""
@@ -380,7 +378,7 @@ export default function SubmissionDetail() {
                         ? "bg-green-500" 
                         : "bg-muted"
                     }`} />
-                    <span className="text-sm">In Review</span>
+                    <span className="text-sm">{t('status.in_review')}</span>
                   </div>
                   <div className={`flex items-center gap-3 ${
                     !["approved", "in_progress", "solution_proposed", "completed"].includes(submission.status) ? "opacity-40" : ""
@@ -390,7 +388,7 @@ export default function SubmissionDetail() {
                         ? "bg-green-500" 
                         : "bg-muted"
                     }`} />
-                    <span className="text-sm">Approved</span>
+                    <span className="text-sm">{t('status.approved')}</span>
                   </div>
                   <div className={`flex items-center gap-3 ${
                     !["in_progress", "solution_proposed", "completed"].includes(submission.status) ? "opacity-40" : ""
@@ -400,7 +398,7 @@ export default function SubmissionDetail() {
                         ? "bg-green-500" 
                         : "bg-muted"
                     }`} />
-                    <span className="text-sm">In Progress</span>
+                    <span className="text-sm">{t('status.in_progress')}</span>
                   </div>
                   <div className={`flex items-center gap-3 ${
                     submission.status !== "completed" ? "opacity-40" : ""
@@ -408,7 +406,7 @@ export default function SubmissionDetail() {
                     <div className={`w-3 h-3 rounded-full ${
                       submission.status === "completed" ? "bg-green-500" : "bg-muted"
                     }`} />
-                    <span className="text-sm">Completed</span>
+                    <span className="text-sm">{t('status.completed')}</span>
                   </div>
                 </div>
               </CardContent>
