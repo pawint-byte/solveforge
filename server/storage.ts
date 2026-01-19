@@ -8,7 +8,11 @@ import {
   userCredits, type UserCredits, type InsertUserCredits,
   addOnCategories, type AddOnCategory, type InsertAddOnCategory,
   addOnItems, type AddOnItem, type InsertAddOnItem,
-  submissionAddOns, type SubmissionAddOn, type InsertSubmissionAddOn
+  submissionAddOns, type SubmissionAddOn, type InsertSubmissionAddOn,
+  documentTemplates, type DocumentTemplate, type InsertDocumentTemplate,
+  documents, type Document, type InsertDocument,
+  documentSigners, type DocumentSigner, type InsertDocumentSigner,
+  documentAuditLogs, type DocumentAuditLog, type InsertDocumentAuditLog
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, isNull, sql } from "drizzle-orm";
@@ -75,6 +79,31 @@ export interface IStorage {
   getSubmissionAddOnsWithDetails(submissionId: string): Promise<(SubmissionAddOn & { itemName: string; itemDescription: string | null; priceMin: number; priceMax: number; timelineLabel: string | null })[]>;
   deleteSubmissionAddOns(submissionId: string): Promise<void>;
   getAddOnItem(id: string): Promise<AddOnItem | undefined>;
+  
+  // Document Templates
+  createDocumentTemplate(data: InsertDocumentTemplate): Promise<DocumentTemplate>;
+  getDocumentTemplate(id: string): Promise<DocumentTemplate | undefined>;
+  getAllDocumentTemplates(): Promise<DocumentTemplate[]>;
+  getActiveDocumentTemplates(): Promise<DocumentTemplate[]>;
+  getDocumentTemplateByType(type: string): Promise<DocumentTemplate | undefined>;
+  updateDocumentTemplate(id: string, data: Partial<DocumentTemplate>): Promise<DocumentTemplate | undefined>;
+  deleteDocumentTemplate(id: string): Promise<void>;
+  
+  // Documents
+  createDocument(data: InsertDocument): Promise<Document>;
+  getDocument(id: string): Promise<Document | undefined>;
+  getDocumentsBySubmission(submissionId: string): Promise<Document[]>;
+  getSignedContractBySubmission(submissionId: string): Promise<Document | undefined>;
+  updateDocument(id: string, data: Partial<Document>): Promise<Document | undefined>;
+  
+  // Document Signers
+  createDocumentSigner(data: InsertDocumentSigner): Promise<DocumentSigner>;
+  getDocumentSigners(documentId: string): Promise<DocumentSigner[]>;
+  updateDocumentSigner(id: string, data: Partial<DocumentSigner>): Promise<DocumentSigner | undefined>;
+  
+  // Document Audit Logs
+  createDocumentAuditLog(data: InsertDocumentAuditLog): Promise<DocumentAuditLog>;
+  getDocumentAuditLogs(documentId: string): Promise<DocumentAuditLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -343,6 +372,105 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSubmissionAddOns(submissionId: string): Promise<void> {
     await db.delete(submissionAddOns).where(eq(submissionAddOns.submissionId, submissionId));
+  }
+
+  // Document Templates
+  async createDocumentTemplate(data: InsertDocumentTemplate): Promise<DocumentTemplate> {
+    const [result] = await db.insert(documentTemplates).values(data).returning();
+    return result;
+  }
+
+  async getDocumentTemplate(id: string): Promise<DocumentTemplate | undefined> {
+    const [result] = await db.select().from(documentTemplates).where(eq(documentTemplates.id, id));
+    return result;
+  }
+
+  async getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
+    return db.select().from(documentTemplates).orderBy(desc(documentTemplates.createdAt));
+  }
+
+  async getActiveDocumentTemplates(): Promise<DocumentTemplate[]> {
+    return db.select().from(documentTemplates).where(eq(documentTemplates.isActive, true)).orderBy(documentTemplates.type);
+  }
+
+  async getDocumentTemplateByType(type: string): Promise<DocumentTemplate | undefined> {
+    const [result] = await db.select().from(documentTemplates)
+      .where(and(eq(documentTemplates.type, type as any), eq(documentTemplates.isActive, true)))
+      .orderBy(desc(documentTemplates.version));
+    return result;
+  }
+
+  async updateDocumentTemplate(id: string, data: Partial<DocumentTemplate>): Promise<DocumentTemplate | undefined> {
+    const [result] = await db.update(documentTemplates)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(documentTemplates.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteDocumentTemplate(id: string): Promise<void> {
+    await db.delete(documentTemplates).where(eq(documentTemplates.id, id));
+  }
+
+  // Documents
+  async createDocument(data: InsertDocument): Promise<Document> {
+    const [result] = await db.insert(documents).values(data).returning();
+    return result;
+  }
+
+  async getDocument(id: string): Promise<Document | undefined> {
+    const [result] = await db.select().from(documents).where(eq(documents.id, id));
+    return result;
+  }
+
+  async getDocumentsBySubmission(submissionId: string): Promise<Document[]> {
+    return db.select().from(documents).where(eq(documents.submissionId, submissionId)).orderBy(desc(documents.createdAt));
+  }
+
+  async getSignedContractBySubmission(submissionId: string): Promise<Document | undefined> {
+    const [result] = await db.select().from(documents)
+      .where(and(
+        eq(documents.submissionId, submissionId),
+        eq(documents.type, "contract"),
+        eq(documents.status, "signed")
+      ));
+    return result;
+  }
+
+  async updateDocument(id: string, data: Partial<Document>): Promise<Document | undefined> {
+    const [result] = await db.update(documents)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(documents.id, id))
+      .returning();
+    return result;
+  }
+
+  // Document Signers
+  async createDocumentSigner(data: InsertDocumentSigner): Promise<DocumentSigner> {
+    const [result] = await db.insert(documentSigners).values(data).returning();
+    return result;
+  }
+
+  async getDocumentSigners(documentId: string): Promise<DocumentSigner[]> {
+    return db.select().from(documentSigners).where(eq(documentSigners.documentId, documentId));
+  }
+
+  async updateDocumentSigner(id: string, data: Partial<DocumentSigner>): Promise<DocumentSigner | undefined> {
+    const [result] = await db.update(documentSigners)
+      .set(data)
+      .where(eq(documentSigners.id, id))
+      .returning();
+    return result;
+  }
+
+  // Document Audit Logs
+  async createDocumentAuditLog(data: InsertDocumentAuditLog): Promise<DocumentAuditLog> {
+    const [result] = await db.insert(documentAuditLogs).values(data).returning();
+    return result;
+  }
+
+  async getDocumentAuditLogs(documentId: string): Promise<DocumentAuditLog[]> {
+    return db.select().from(documentAuditLogs).where(eq(documentAuditLogs.documentId, documentId)).orderBy(desc(documentAuditLogs.createdAt));
   }
 }
 

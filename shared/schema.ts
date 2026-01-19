@@ -39,6 +39,23 @@ export const paymentStatusEnum = pgEnum("payment_status", [
   "refunded"
 ]);
 
+export const documentTypeEnum = pgEnum("document_type", [
+  "estimate",
+  "contract",
+  "terms"
+]);
+
+export const documentStatusEnum = pgEnum("document_status", [
+  "draft",
+  "pending_signature",
+  "sent",
+  "viewed",
+  "signed",
+  "declined",
+  "voided",
+  "expired"
+]);
+
 // Problem Submissions Table
 export const submissions = pgTable("submissions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -174,6 +191,78 @@ export const submissionAddOns = pgTable("submission_add_ons", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Document Templates Table (admin-editable templates for legal documents)
+export const documentTemplates = pgTable("document_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name", { length: 150 }).notNull(),
+  type: documentTypeEnum("type").notNull(),
+  description: text("description"),
+  bodyMarkdown: text("body_markdown").notNull(),
+  variables: text("variables").array(),
+  version: integer("version").notNull().default(1),
+  isActive: boolean("is_active").notNull().default(true),
+  createdBy: varchar("created_by"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Documents Table (instances created from templates for submissions)
+export const documents = pgTable("documents", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  submissionId: varchar("submission_id").notNull(),
+  templateId: varchar("template_id"),
+  type: documentTypeEnum("type").notNull(),
+  status: documentStatusEnum("status").notNull().default("draft"),
+  title: varchar("title", { length: 200 }).notNull(),
+  bodyHtml: text("body_html"),
+  bodyMarkdown: text("body_markdown"),
+  pdfStorageKey: varchar("pdf_storage_key"),
+  pdfHash: varchar("pdf_hash"),
+  signatureProviderId: varchar("signature_provider_id"),
+  signatureProviderType: varchar("signature_provider_type", { length: 50 }),
+  budgetBreakdown: text("budget_breakdown"),
+  paymentTerms: text("payment_terms"),
+  ownershipClause: text("ownership_clause"),
+  supportTerms: text("support_terms"),
+  customClauses: text("custom_clauses"),
+  expiresAt: timestamp("expires_at"),
+  sentAt: timestamp("sent_at"),
+  viewedAt: timestamp("viewed_at"),
+  signedAt: timestamp("signed_at"),
+  createdBy: varchar("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Document Signers Table (who needs to sign each document)
+export const documentSigners = pgTable("document_signers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  documentId: varchar("document_id").notNull(),
+  userId: varchar("user_id"),
+  email: varchar("email", { length: 255 }).notNull(),
+  name: varchar("name", { length: 150 }),
+  role: varchar("role", { length: 50 }).notNull().default("signer"),
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  signatureProviderId: varchar("signature_provider_id"),
+  signedAt: timestamp("signed_at"),
+  declinedAt: timestamp("declined_at"),
+  declineReason: text("decline_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Document Audit Logs Table (for compliance tracking)
+export const documentAuditLogs = pgTable("document_audit_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  documentId: varchar("document_id").notNull(),
+  actorId: varchar("actor_id"),
+  actorEmail: varchar("actor_email", { length: 255 }),
+  action: varchar("action", { length: 50 }).notNull(),
+  metadata: text("metadata"),
+  ipAddress: varchar("ip_address", { length: 50 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const submissionsRelations = relations(submissions, ({ many }) => ({
   payments: many(payments),
@@ -221,6 +310,37 @@ export const submissionAddOnsRelations = relations(submissionAddOns, ({ one }) =
   addOnItem: one(addOnItems, {
     fields: [submissionAddOns.addOnItemId],
     references: [addOnItems.id],
+  }),
+}));
+
+export const documentTemplatesRelations = relations(documentTemplates, ({ many }) => ({
+  documents: many(documents),
+}));
+
+export const documentsRelations = relations(documents, ({ one, many }) => ({
+  submission: one(submissions, {
+    fields: [documents.submissionId],
+    references: [submissions.id],
+  }),
+  template: one(documentTemplates, {
+    fields: [documents.templateId],
+    references: [documentTemplates.id],
+  }),
+  signers: many(documentSigners),
+  auditLogs: many(documentAuditLogs),
+}));
+
+export const documentSignersRelations = relations(documentSigners, ({ one }) => ({
+  document: one(documents, {
+    fields: [documentSigners.documentId],
+    references: [documents.id],
+  }),
+}));
+
+export const documentAuditLogsRelations = relations(documentAuditLogs, ({ one }) => ({
+  document: one(documents, {
+    fields: [documentAuditLogs.documentId],
+    references: [documents.id],
   }),
 }));
 
@@ -284,6 +404,28 @@ export const insertSubmissionAddOnSchema = createInsertSchema(submissionAddOns).
   createdAt: true,
 });
 
+export const insertDocumentTemplateSchema = createInsertSchema(documentTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertDocumentSchema = createInsertSchema(documents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertDocumentSignerSchema = createInsertSchema(documentSigners).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDocumentAuditLogSchema = createInsertSchema(documentAuditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type Submission = typeof submissions.$inferSelect;
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
@@ -305,3 +447,11 @@ export type AddOnItem = typeof addOnItems.$inferSelect;
 export type InsertAddOnItem = z.infer<typeof insertAddOnItemSchema>;
 export type SubmissionAddOn = typeof submissionAddOns.$inferSelect;
 export type InsertSubmissionAddOn = z.infer<typeof insertSubmissionAddOnSchema>;
+export type DocumentTemplate = typeof documentTemplates.$inferSelect;
+export type InsertDocumentTemplate = z.infer<typeof insertDocumentTemplateSchema>;
+export type Document = typeof documents.$inferSelect;
+export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type DocumentSigner = typeof documentSigners.$inferSelect;
+export type InsertDocumentSigner = z.infer<typeof insertDocumentSignerSchema>;
+export type DocumentAuditLog = typeof documentAuditLogs.$inferSelect;
+export type InsertDocumentAuditLog = z.infer<typeof insertDocumentAuditLogSchema>;
