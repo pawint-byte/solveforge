@@ -60,8 +60,9 @@ export async function registerRoutes(
           await storage.createSubmissionAddOn({
             submissionId: submission.id,
             addOnItemId: addon.itemId,
-            priceQuoted: addOnItem.priceMin, // Use server-side minimum price
-            customDescription: addon.customDescription,
+            quantity: 1,
+            estimatedPrice: addOnItem.priceMin,
+            customNotes: addon.customNotes || null,
           });
         }
       }
@@ -946,9 +947,9 @@ export async function registerRoutes(
 {{addons_list}}
 
 ## Pricing Summary
-- **Base Range:** ${{budget_min}} - ${{budget_max}}
-- **Add-Ons Total:** ${{addons_total}}
-- **Estimated Total:** ${{total_min}} - ${{total_max}}
+- **Base Range:** \${{budget_min}} - \${{budget_max}}
+- **Add-Ons Total:** \${{addons_total}}
+- **Estimated Total:** \${{total_min}} - \${{total_max}}
 
 ## Payment Schedule
 1. **Deposit (30%):** Due upon approval
@@ -967,7 +968,7 @@ Estimated delivery: {{timeline}}
         {
           name: "Service Contract",
           type: "contract",
-          content: `# SERVICE CONTRACT
+          bodyMarkdown: `# SERVICE CONTRACT
 
 **Contract ID:** {{document_id}}
 **Date:** {{date}}
@@ -985,10 +986,10 @@ This Service Contract ("Contract") is entered into between:
 {{addons_list}}
 
 ## COMPENSATION
-- **Total Project Value:** ${{total_min}} - ${{total_max}}
-- **Deposit (30%):** ${{deposit_amount}} due upon signing
-- **Midpoint (40%):** ${{midpoint_amount}} due upon solution proposal
-- **Final (30%):** ${{final_amount}} due upon completion
+- **Total Project Value:** \${{total_min}} - \${{total_max}}
+- **Deposit (30%):** \${{deposit_amount}} due upon signing
+- **Midpoint (40%):** \${{midpoint_amount}} due upon solution proposal
+- **Final (30%):** \${{final_amount}} due upon completion
 
 ## TIMELINE
 Estimated completion: {{timeline}} from deposit receipt.
@@ -1017,7 +1018,7 @@ Estimated completion: {{timeline}} from deposit receipt.
         {
           name: "Terms of Service",
           type: "terms",
-          content: `# TERMS OF SERVICE
+          bodyMarkdown: `# TERMS OF SERVICE
 
 **Last Updated:** {{date}}
 
@@ -1058,7 +1059,7 @@ We may update these terms with notice to active clients.
       ];
 
       for (const template of templates) {
-        await storage.createDocumentTemplate(template);
+        await storage.createDocumentTemplate(template as any);
       }
 
       res.json({ message: "Default document templates seeded", count: templates.length });
@@ -1112,8 +1113,8 @@ We may update these terms with notice to active clients.
       await storage.createDocumentAuditLog({
         documentId: document.id,
         action: "viewed",
-        performedBy: userId,
-        metadata: { ip: req.ip },
+        actorId: userId,
+        ipAddress: req.ip,
       });
       
       // Update status to viewed if pending
@@ -1139,13 +1140,13 @@ We may update these terms with notice to active clients.
       const { templateId, type } = req.body;
       
       // Get template if provided
-      let content = req.body.content || "";
+      let content = req.body.bodyMarkdown || "";
       let templateName = req.body.name || "Document";
       
       if (templateId) {
         const template = await storage.getDocumentTemplate(templateId);
         if (template) {
-          content = template.content;
+          content = template.bodyMarkdown;
           templateName = template.name;
         }
       }
@@ -1164,7 +1165,7 @@ We may update these terms with notice to active clients.
       const renderedContent = content
         .replace(/\{\{submission_id\}\}/g, submission.id)
         .replace(/\{\{document_id\}\}/g, "DOC-" + Date.now())
-        .replace(/\{\{client_name\}\}/g, submission.contactName || "Client")
+        .replace(/\{\{client_name\}\}/g, "Client")
         .replace(/\{\{date\}\}/g, new Date().toLocaleDateString())
         .replace(/\{\{description\}\}/g, submission.description || "")
         .replace(/\{\{addons_list\}\}/g, addonsList || "No add-ons selected")
@@ -1183,15 +1184,16 @@ We may update these terms with notice to active clients.
         templateId: templateId || null,
         type: type || "estimate",
         title: templateName,
-        content: renderedContent,
+        bodyMarkdown: renderedContent,
         status: "draft",
+        createdBy: (req.user as any).claims.sub,
       });
       
       // Log creation
       await storage.createDocumentAuditLog({
         documentId: document.id,
         action: "created",
-        performedBy: (req.user as any).claims.sub,
+        actorId: (req.user as any).claims.sub,
       });
       
       res.status(201).json(document);
@@ -1217,7 +1219,7 @@ We may update these terms with notice to active clients.
       await storage.createDocumentAuditLog({
         documentId: document.id,
         action: "sent",
-        performedBy: (req.user as any).claims.sub,
+        actorId: (req.user as any).claims.sub,
       });
       
       res.json(updated);
@@ -1261,20 +1263,19 @@ We may update these terms with notice to active clients.
       // Create signer record
       await storage.createDocumentSigner({
         documentId: document.id,
-        signerName: submission.contactName || "Client",
-        signerEmail: submission.contactEmail || "",
-        signerRole: "client",
+        name: "Client",
+        email: "user@example.com",
+        role: "client",
         status: "signed",
         signedAt: new Date(),
-        signatureData: signatureData || null,
-        ipAddress: req.ip,
       });
       
       await storage.createDocumentAuditLog({
         documentId: document.id,
         action: "signed",
-        performedBy: userId,
-        metadata: { ip: req.ip, userAgent: req.get("User-Agent") },
+        actorId: userId,
+        ipAddress: req.ip,
+        userAgent: req.get("User-Agent"),
       });
       
       res.json(updated);
