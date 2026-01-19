@@ -45,4 +45,4 @@ integrations = ["javascript_database:1.0.0", "javascript_log_in_with_replit:2.0.
 [userenv]
 
 [userenv.shared]
-VITE_GA_MEASUREMENT_ID = "G-GNZP4PNZV0"
+VITE_GA_MEASUREMENT_ID = "G-WHS17V1WFW"
