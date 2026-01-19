@@ -36,12 +36,27 @@ export async function registerRoutes(
   app.post("/api/submissions", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const { addOns, ...submissionData } = req.body;
+      
       const data = insertSubmissionSchema.parse({
-        ...req.body,
+        ...submissionData,
         userId,
       });
       
       const submission = await storage.createSubmission(data);
+      
+      // Save selected add-ons if provided
+      if (addOns && Array.isArray(addOns)) {
+        for (const addon of addOns) {
+          await storage.createSubmissionAddOn({
+            submissionId: submission.id,
+            addOnItemId: addon.itemId,
+            priceQuoted: addon.priceMin || 0,
+            customDescription: addon.customDescription,
+          });
+        }
+      }
+      
       res.status(201).json(submission);
     } catch (error) {
       if (error instanceof z.ZodError) {

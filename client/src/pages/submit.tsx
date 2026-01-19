@@ -15,10 +15,11 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Zap, Loader2 } from "lucide-react";
+import { ArrowLeft, Zap, Loader2, Puzzle } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
+import { AddOnsBuilder, AddOnsSummary, type SelectedAddOn } from "@/components/addons-builder";
 
 const formSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(200, "Title must be less than 200 characters"),
@@ -55,6 +56,7 @@ export default function SubmitPage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [budgetRange, setBudgetRange] = useState([100, 500]);
+  const [selectedAddOns, setSelectedAddOns] = useState<SelectedAddOn[]>([]);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -87,8 +89,17 @@ export default function SubmitPage() {
   });
 
   const createSubmission = useMutation({
-    mutationFn: async (data: FormData) => {
-      const response = await apiRequest("POST", "/api/submissions", data);
+    mutationFn: async (data: FormData & { selectedAddOns?: SelectedAddOn[] }) => {
+      const response = await apiRequest("POST", "/api/submissions", {
+        ...data,
+        addOns: data.selectedAddOns?.map(addon => ({
+          itemId: addon.item.id,
+          name: addon.item.name,
+          priceMin: addon.item.priceMin,
+          priceMax: addon.item.priceMax,
+          customDescription: addon.customDescription,
+        })),
+      });
       return response.json();
     },
     onSuccess: () => {
@@ -118,6 +129,7 @@ export default function SubmitPage() {
       ...data,
       budgetMin: budgetRange[0],
       budgetMax: budgetRange[1],
+      selectedAddOns,
     });
   };
 
@@ -273,6 +285,25 @@ export default function SubmitPage() {
                     This is what you're willing to invest for the solution.
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Add-Ons Builder */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Puzzle className="w-5 h-5 text-primary" />
+                  Feature Add-Ons (Optional)
+                </CardTitle>
+                <CardDescription>
+                  Select specific features to include in your solution. This helps us provide accurate pricing.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AddOnsBuilder
+                  selectedAddOns={selectedAddOns}
+                  onSelectionChange={setSelectedAddOns}
+                />
               </CardContent>
             </Card>
 
