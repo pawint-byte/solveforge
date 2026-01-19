@@ -655,5 +655,202 @@ export async function registerRoutes(
     }
   });
 
+  // ============ ADD-ON ROUTES ============
+
+  // Get all add-on categories with items (public)
+  app.get("/api/addons", async (req, res) => {
+    try {
+      const categories = await storage.getActiveAddOnCategories();
+      const items = await storage.getActiveAddOnItems();
+      
+      // Group items by category
+      const categoriesWithItems = categories.map(category => ({
+        ...category,
+        items: items.filter(item => item.categoryId === category.id)
+      }));
+      
+      res.json(categoriesWithItems);
+    } catch (error) {
+      console.error("Error fetching add-ons:", error);
+      res.status(500).json({ message: "Failed to fetch add-ons" });
+    }
+  });
+
+  // Admin: Get all add-on categories (including inactive)
+  app.get("/api/admin/addons/categories", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const categories = await storage.getAllAddOnCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  // Admin: Create add-on category
+  app.post("/api/admin/addons/categories", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const category = await storage.createAddOnCategory(req.body);
+      res.status(201).json(category);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  // Admin: Update add-on category
+  app.patch("/api/admin/addons/categories/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const category = await storage.updateAddOnCategory(req.params.id, req.body);
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error("Error updating category:", error);
+      res.status(500).json({ message: "Failed to update category" });
+    }
+  });
+
+  // Admin: Delete add-on category
+  app.delete("/api/admin/addons/categories/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await storage.deleteAddOnCategory(req.params.id);
+      res.json({ message: "Category deleted" });
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      res.status(500).json({ message: "Failed to delete category" });
+    }
+  });
+
+  // Admin: Get all add-on items
+  app.get("/api/admin/addons/items", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const items = await storage.getAllAddOnItems();
+      res.json(items);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      res.status(500).json({ message: "Failed to fetch items" });
+    }
+  });
+
+  // Admin: Create add-on item
+  app.post("/api/admin/addons/items", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const item = await storage.createAddOnItem(req.body);
+      res.status(201).json(item);
+    } catch (error) {
+      console.error("Error creating item:", error);
+      res.status(500).json({ message: "Failed to create item" });
+    }
+  });
+
+  // Admin: Update add-on item
+  app.patch("/api/admin/addons/items/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const item = await storage.updateAddOnItem(req.params.id, req.body);
+      if (!item) {
+        return res.status(404).json({ message: "Item not found" });
+      }
+      res.json(item);
+    } catch (error) {
+      console.error("Error updating item:", error);
+      res.status(500).json({ message: "Failed to update item" });
+    }
+  });
+
+  // Admin: Delete add-on item
+  app.delete("/api/admin/addons/items/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await storage.deleteAddOnItem(req.params.id);
+      res.json({ message: "Item deleted" });
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      res.status(500).json({ message: "Failed to delete item" });
+    }
+  });
+
+  // Get add-ons for a submission
+  app.get("/api/submissions/:id/addons", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const submission = await storage.getSubmission(req.params.id);
+      
+      if (!submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+      
+      if (submission.userId !== userId && !ADMIN_USER_IDS.has(userId)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const addons = await storage.getSubmissionAddOns(req.params.id);
+      res.json(addons);
+    } catch (error) {
+      console.error("Error fetching submission add-ons:", error);
+      res.status(500).json({ message: "Failed to fetch add-ons" });
+    }
+  });
+
+  // Admin: Seed default add-ons
+  app.post("/api/admin/addons/seed", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      // Create default categories
+      const categories = [
+        { name: "Authentication & Security", description: "User authentication and security features", icon: "Shield", sortOrder: 1 },
+        { name: "Payments & E-commerce", description: "Payment processing and online store features", icon: "CreditCard", sortOrder: 2 },
+        { name: "Analytics & SEO", description: "Analytics tracking and search engine optimization", icon: "BarChart", sortOrder: 3 },
+        { name: "UI/UX Enhancements", description: "User interface and experience improvements", icon: "Palette", sortOrder: 4 },
+        { name: "Integrations", description: "Third-party service integrations", icon: "Plug", sortOrder: 5 },
+        { name: "Custom", description: "Custom features and requirements", icon: "Settings", sortOrder: 6 },
+      ];
+
+      const createdCategories: any[] = [];
+      for (const cat of categories) {
+        const created = await storage.createAddOnCategory(cat);
+        createdCategories.push(created);
+      }
+
+      // Default add-on items
+      const items = [
+        // Authentication & Security
+        { categoryId: createdCategories[0].id, name: "Social Login (Google)", description: "Add Google OAuth login", tooltip: "Allow users to sign in with their Google account", priceMin: 200, priceMax: 300, estimatedDays: 3, timelineLabel: "3-5 days", sortOrder: 1, isPopular: true },
+        { categoryId: createdCategories[0].id, name: "Social Login (Facebook)", description: "Add Facebook OAuth login", tooltip: "Allow users to sign in with their Facebook account", priceMin: 200, priceMax: 300, estimatedDays: 3, timelineLabel: "3-5 days", sortOrder: 2 },
+        { categoryId: createdCategories[0].id, name: "Two-Factor Authentication (2FA)", description: "Add 2FA for enhanced security", tooltip: "Protect accounts with SMS or app-based verification", priceMin: 300, priceMax: 500, estimatedDays: 5, timelineLabel: "1 week", sortOrder: 3, isPopular: true },
+        { categoryId: createdCategories[0].id, name: "CAPTCHA Integration", description: "Add CAPTCHA to forms", tooltip: "Prevent bots with Google reCAPTCHA", priceMin: 100, priceMax: 200, estimatedDays: 2, timelineLabel: "2-3 days", sortOrder: 4 },
+        // Payments & E-commerce
+        { categoryId: createdCategories[1].id, name: "Stripe Integration", description: "Accept card payments with Stripe", tooltip: "Full Stripe checkout integration", priceMin: 400, priceMax: 700, estimatedDays: 7, timelineLabel: "1-2 weeks", sortOrder: 1, isPopular: true },
+        { categoryId: createdCategories[1].id, name: "Shopping Cart", description: "Multi-item shopping cart", tooltip: "Add to cart, quantity updates, cart persistence", priceMin: 500, priceMax: 900, estimatedDays: 10, timelineLabel: "1-2 weeks", sortOrder: 2 },
+        { categoryId: createdCategories[1].id, name: "Subscription Billing", description: "Recurring payment system", tooltip: "Monthly/yearly subscription plans", priceMin: 600, priceMax: 1000, estimatedDays: 14, timelineLabel: "2-3 weeks", sortOrder: 3, isPopular: true },
+        { categoryId: createdCategories[1].id, name: "Cryptocurrency Payments", description: "Accept BTC, ETH, and more", tooltip: "Coinbase Commerce integration", priceMin: 300, priceMax: 500, estimatedDays: 5, timelineLabel: "1 week", sortOrder: 4 },
+        // Analytics & SEO
+        { categoryId: createdCategories[2].id, name: "Google Analytics 4 Setup", description: "Full GA4 implementation", tooltip: "Event tracking, conversions, custom reports", priceMin: 150, priceMax: 300, estimatedDays: 3, timelineLabel: "3-5 days", sortOrder: 1, isPopular: true },
+        { categoryId: createdCategories[2].id, name: "Custom Analytics Dashboard", description: "Real-time analytics dashboard", tooltip: "Visualize key metrics in your app", priceMin: 300, priceMax: 600, estimatedDays: 7, timelineLabel: "1-2 weeks", sortOrder: 2 },
+        { categoryId: createdCategories[2].id, name: "SEO Optimization", description: "Technical SEO implementation", tooltip: "Meta tags, sitemap, structured data", priceMin: 200, priceMax: 400, estimatedDays: 5, timelineLabel: "1 week", sortOrder: 3 },
+        // UI/UX Enhancements
+        { categoryId: createdCategories[3].id, name: "AI Chatbot", description: "Conversational AI assistant", tooltip: "Dialogflow or OpenAI powered chatbot", priceMin: 400, priceMax: 800, estimatedDays: 10, timelineLabel: "1-2 weeks", sortOrder: 1, isPopular: true },
+        { categoryId: createdCategories[3].id, name: "PWA Conversion", description: "Make your site installable", tooltip: "Offline support, push notifications", priceMin: 200, priceMax: 400, estimatedDays: 5, timelineLabel: "1 week", sortOrder: 2 },
+        { categoryId: createdCategories[3].id, name: "Dark Mode", description: "Add dark/light theme toggle", tooltip: "System preference detection included", priceMin: 100, priceMax: 200, estimatedDays: 2, timelineLabel: "2-3 days", sortOrder: 3 },
+        { categoryId: createdCategories[3].id, name: "Multi-language Support", description: "Internationalization (i18n)", tooltip: "Add support for multiple languages", priceMin: 300, priceMax: 600, estimatedDays: 7, timelineLabel: "1-2 weeks", sortOrder: 4 },
+        // Integrations
+        { categoryId: createdCategories[4].id, name: "Mailchimp Integration", description: "Email marketing automation", tooltip: "Newsletter signup, automated campaigns", priceMin: 200, priceMax: 400, estimatedDays: 4, timelineLabel: "4-5 days", sortOrder: 1, isPopular: true },
+        { categoryId: createdCategories[4].id, name: "Zapier Integration", description: "Connect to 5000+ apps", tooltip: "Automate workflows with Zapier", priceMin: 250, priceMax: 500, estimatedDays: 5, timelineLabel: "1 week", sortOrder: 2 },
+        { categoryId: createdCategories[4].id, name: "Social Sharing", description: "Share buttons for social media", tooltip: "Share to Twitter, Facebook, LinkedIn", priceMin: 100, priceMax: 200, estimatedDays: 2, timelineLabel: "2-3 days", sortOrder: 3 },
+        { categoryId: createdCategories[4].id, name: "Push Notifications", description: "Browser push notifications", tooltip: "Re-engage users with timely updates", priceMin: 300, priceMax: 500, estimatedDays: 5, timelineLabel: "1 week", sortOrder: 4 },
+        // Custom
+        { categoryId: createdCategories[5].id, name: "Custom Feature", description: "Describe your custom requirement", tooltip: "We'll provide a custom quote based on your needs", priceMin: 0, priceMax: 0, estimatedDays: 0, timelineLabel: "Varies", sortOrder: 1 },
+      ];
+
+      for (const item of items) {
+        await storage.createAddOnItem(item);
+      }
+
+      res.json({ message: "Default add-ons seeded successfully", categoriesCreated: createdCategories.length, itemsCreated: items.length });
+    } catch (error) {
+      console.error("Error seeding add-ons:", error);
+      res.status(500).json({ message: "Failed to seed add-ons" });
+    }
+  });
+
   return httpServer;
 }

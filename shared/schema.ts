@@ -132,6 +132,48 @@ export const userCredits = pgTable("user_credits", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Add-On Categories Table (admin-configurable)
+export const addOnCategories = pgTable("add_on_categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  icon: varchar("icon", { length: 50 }),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Add-On Items Table (individual add-ons within categories)
+export const addOnItems = pgTable("add_on_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  categoryId: varchar("category_id").notNull(),
+  name: varchar("name", { length: 150 }).notNull(),
+  description: text("description"),
+  tooltip: text("tooltip"),
+  priceMin: integer("price_min").notNull(),
+  priceMax: integer("price_max").notNull(),
+  estimatedDays: integer("estimated_days"),
+  timelineLabel: varchar("timeline_label", { length: 50 }),
+  icon: varchar("icon", { length: 50 }),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  isPopular: boolean("is_popular").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Submission Add-Ons (junction table for selected add-ons per submission)
+export const submissionAddOns = pgTable("submission_add_ons", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  submissionId: varchar("submission_id").notNull(),
+  addOnItemId: varchar("add_on_item_id").notNull(),
+  quantity: integer("quantity").notNull().default(1),
+  customNotes: text("custom_notes"),
+  estimatedPrice: integer("estimated_price"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const submissionsRelations = relations(submissions, ({ many }) => ({
   payments: many(payments),
@@ -157,6 +199,28 @@ export const messagesRelations = relations(messages, ({ one }) => ({
   submission: one(submissions, {
     fields: [messages.submissionId],
     references: [submissions.id],
+  }),
+}));
+
+export const addOnCategoriesRelations = relations(addOnCategories, ({ many }) => ({
+  items: many(addOnItems),
+}));
+
+export const addOnItemsRelations = relations(addOnItems, ({ one }) => ({
+  category: one(addOnCategories, {
+    fields: [addOnItems.categoryId],
+    references: [addOnCategories.id],
+  }),
+}));
+
+export const submissionAddOnsRelations = relations(submissionAddOns, ({ one }) => ({
+  submission: one(submissions, {
+    fields: [submissionAddOns.submissionId],
+    references: [submissions.id],
+  }),
+  addOnItem: one(addOnItems, {
+    fields: [submissionAddOns.addOnItemId],
+    references: [addOnItems.id],
   }),
 }));
 
@@ -203,6 +267,23 @@ export const insertUserCreditsSchema = createInsertSchema(userCredits).omit({
   createdAt: true,
 });
 
+export const insertAddOnCategorySchema = createInsertSchema(addOnCategories).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAddOnItemSchema = createInsertSchema(addOnItems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSubmissionAddOnSchema = createInsertSchema(submissionAddOns).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type Submission = typeof submissions.$inferSelect;
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
@@ -218,3 +299,9 @@ export type Referral = typeof referrals.$inferSelect;
 export type InsertReferral = z.infer<typeof insertReferralSchema>;
 export type UserCredits = typeof userCredits.$inferSelect;
 export type InsertUserCredits = z.infer<typeof insertUserCreditsSchema>;
+export type AddOnCategory = typeof addOnCategories.$inferSelect;
+export type InsertAddOnCategory = z.infer<typeof insertAddOnCategorySchema>;
+export type AddOnItem = typeof addOnItems.$inferSelect;
+export type InsertAddOnItem = z.infer<typeof insertAddOnItemSchema>;
+export type SubmissionAddOn = typeof submissionAddOns.$inferSelect;
+export type InsertSubmissionAddOn = z.infer<typeof insertSubmissionAddOnSchema>;

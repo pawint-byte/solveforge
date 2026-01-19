@@ -5,7 +5,10 @@ import {
   messages, type Message, type InsertMessage,
   newsletterSubscribers, type NewsletterSubscriber, type InsertNewsletterSubscriber,
   referrals, type Referral, type InsertReferral,
-  userCredits, type UserCredits, type InsertUserCredits
+  userCredits, type UserCredits, type InsertUserCredits,
+  addOnCategories, type AddOnCategory, type InsertAddOnCategory,
+  addOnItems, type AddOnItem, type InsertAddOnItem,
+  submissionAddOns, type SubmissionAddOn, type InsertSubmissionAddOn
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, isNull, sql } from "drizzle-orm";
@@ -50,6 +53,26 @@ export interface IStorage {
   createUserCredits(data: InsertUserCredits): Promise<UserCredits>;
   getUserCredits(userId: string): Promise<UserCredits[]>;
   getUserTotalCredits(userId: string): Promise<number>;
+  
+  // Add-On Categories
+  createAddOnCategory(data: InsertAddOnCategory): Promise<AddOnCategory>;
+  getAllAddOnCategories(): Promise<AddOnCategory[]>;
+  getActiveAddOnCategories(): Promise<AddOnCategory[]>;
+  updateAddOnCategory(id: string, data: Partial<AddOnCategory>): Promise<AddOnCategory | undefined>;
+  deleteAddOnCategory(id: string): Promise<void>;
+  
+  // Add-On Items
+  createAddOnItem(data: InsertAddOnItem): Promise<AddOnItem>;
+  getAllAddOnItems(): Promise<AddOnItem[]>;
+  getActiveAddOnItems(): Promise<AddOnItem[]>;
+  getAddOnItemsByCategory(categoryId: string): Promise<AddOnItem[]>;
+  updateAddOnItem(id: string, data: Partial<AddOnItem>): Promise<AddOnItem | undefined>;
+  deleteAddOnItem(id: string): Promise<void>;
+  
+  // Submission Add-Ons
+  createSubmissionAddOn(data: InsertSubmissionAddOn): Promise<SubmissionAddOn>;
+  getSubmissionAddOns(submissionId: string): Promise<SubmissionAddOn[]>;
+  deleteSubmissionAddOns(submissionId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -210,6 +233,82 @@ export class DatabaseStorage implements IStorage {
       .from(userCredits)
       .where(eq(userCredits.userId, userId));
     return result[0]?.total || 0;
+  }
+
+  // Add-On Categories
+  async createAddOnCategory(data: InsertAddOnCategory): Promise<AddOnCategory> {
+    const [result] = await db.insert(addOnCategories).values(data).returning();
+    return result;
+  }
+
+  async getAllAddOnCategories(): Promise<AddOnCategory[]> {
+    return db.select().from(addOnCategories).orderBy(addOnCategories.sortOrder);
+  }
+
+  async getActiveAddOnCategories(): Promise<AddOnCategory[]> {
+    return db.select().from(addOnCategories)
+      .where(eq(addOnCategories.isActive, true))
+      .orderBy(addOnCategories.sortOrder);
+  }
+
+  async updateAddOnCategory(id: string, data: Partial<AddOnCategory>): Promise<AddOnCategory | undefined> {
+    const [result] = await db.update(addOnCategories)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(addOnCategories.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteAddOnCategory(id: string): Promise<void> {
+    await db.delete(addOnCategories).where(eq(addOnCategories.id, id));
+  }
+
+  // Add-On Items
+  async createAddOnItem(data: InsertAddOnItem): Promise<AddOnItem> {
+    const [result] = await db.insert(addOnItems).values(data).returning();
+    return result;
+  }
+
+  async getAllAddOnItems(): Promise<AddOnItem[]> {
+    return db.select().from(addOnItems).orderBy(addOnItems.sortOrder);
+  }
+
+  async getActiveAddOnItems(): Promise<AddOnItem[]> {
+    return db.select().from(addOnItems)
+      .where(eq(addOnItems.isActive, true))
+      .orderBy(addOnItems.sortOrder);
+  }
+
+  async getAddOnItemsByCategory(categoryId: string): Promise<AddOnItem[]> {
+    return db.select().from(addOnItems)
+      .where(and(eq(addOnItems.categoryId, categoryId), eq(addOnItems.isActive, true)))
+      .orderBy(addOnItems.sortOrder);
+  }
+
+  async updateAddOnItem(id: string, data: Partial<AddOnItem>): Promise<AddOnItem | undefined> {
+    const [result] = await db.update(addOnItems)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(addOnItems.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteAddOnItem(id: string): Promise<void> {
+    await db.delete(addOnItems).where(eq(addOnItems.id, id));
+  }
+
+  // Submission Add-Ons
+  async createSubmissionAddOn(data: InsertSubmissionAddOn): Promise<SubmissionAddOn> {
+    const [result] = await db.insert(submissionAddOns).values(data).returning();
+    return result;
+  }
+
+  async getSubmissionAddOns(submissionId: string): Promise<SubmissionAddOn[]> {
+    return db.select().from(submissionAddOns).where(eq(submissionAddOns.submissionId, submissionId));
+  }
+
+  async deleteSubmissionAddOns(submissionId: string): Promise<void> {
+    await db.delete(submissionAddOns).where(eq(submissionAddOns.submissionId, submissionId));
   }
 }
 
