@@ -5,4 +5,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://solveforge.replit.app/sitemap.xml
+Sitemap: https://streamlit-demo--pawint.replit.app/sitemap.xml
