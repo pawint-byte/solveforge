@@ -292,6 +292,16 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Deposit already paid" });
       }
 
+      // Check if contract signature is required
+      const documents = await storage.getDocumentsBySubmission(req.params.id);
+      const hasContract = documents.some(d => d.type === "contract");
+      if (hasContract) {
+        const signedContract = await storage.getSignedContractBySubmission(req.params.id);
+        if (!signedContract) {
+          return res.status(403).json({ message: "A signed contract is required before making payment" });
+        }
+      }
+
       const stripe = await getUncachableStripeClient();
       
       // Calculate 30% deposit based on budget range midpoint
@@ -371,6 +381,16 @@ export async function registerRoutes(
       const hasDeposit = existingPayments.some(p => p.milestoneNumber === 1 && p.status === "completed");
       if (hasDeposit) {
         return res.status(400).json({ message: "Deposit already paid" });
+      }
+
+      // Check if contract signature is required
+      const documents = await storage.getDocumentsBySubmission(req.params.id);
+      const hasContract = documents.some(d => d.type === "contract");
+      if (hasContract) {
+        const signedContract = await storage.getSignedContractBySubmission(req.params.id);
+        if (!signedContract) {
+          return res.status(403).json({ message: "A signed contract is required before making payment" });
+        }
       }
 
       // Calculate 30% deposit based on budget range midpoint
@@ -1247,6 +1267,11 @@ We may update these terms with notice to active clients.
       
       if (document.status === "signed") {
         return res.status(400).json({ message: "Document already signed" });
+      }
+      
+      // Only allow signing documents that have been sent
+      if (document.status !== "sent" && document.status !== "viewed") {
+        return res.status(400).json({ message: "Document is not ready for signing" });
       }
       
       const { signatureData, agreedToTerms } = req.body;

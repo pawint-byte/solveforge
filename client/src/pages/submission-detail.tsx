@@ -10,9 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, Zap, Clock, CheckCircle, AlertCircle, 
-  FileText, Send, Loader2, MessageSquare, CreditCard, Bitcoin, Puzzle
+  FileText, Send, Loader2, MessageSquare, CreditCard, Bitcoin, Puzzle,
+  FileSignature, Eye, PenTool, AlertTriangle
 } from "lucide-react";
-import type { Submission, Message, Payment, SubmissionAddOn } from "@shared/schema";
+import type { Submission, Message, Payment, SubmissionAddOn, Document } from "@shared/schema";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
 
@@ -49,6 +53,9 @@ export default function SubmissionDetail() {
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
   const [paymentLoading, setPaymentLoading] = useState<"card" | "crypto" | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [signDialogOpen, setSignDialogOpen] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -78,6 +85,34 @@ export default function SubmissionDetail() {
   const { data: submissionAddOns = [] } = useQuery<SubmissionAddOn[]>({
     queryKey: ["/api/submissions", id, "addons"],
     enabled: !!submission,
+  });
+
+  const { data: documents = [] } = useQuery<Document[]>({
+    queryKey: ["/api/submissions", id, "documents"],
+    enabled: !!submission,
+  });
+
+  const { data: contractStatus } = useQuery<{ hasSignedContract: boolean; contractId: string | null; signedAt: string | null }>({
+    queryKey: ["/api/submissions", id, "contract-status"],
+    enabled: !!submission,
+  });
+
+  const signDocument = useMutation({
+    mutationFn: async ({ documentId, agreedToTerms }: { documentId: string; agreedToTerms: boolean }) => {
+      const response = await apiRequest("POST", `/api/documents/${documentId}/sign`, { agreedToTerms });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/submissions", id, "documents"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/submissions", id, "contract-status"] });
+      setSignDialogOpen(false);
+      setSelectedDocument(null);
+      setAgreedToTerms(false);
+      toast({ title: "Document signed successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to sign document", variant: "destructive" });
+    },
   });
 
   const handleCardPayment = async () => {
@@ -339,6 +374,48 @@ export default function SubmissionDetail() {
               </Card>
             )}
 
+            {/* Documents Section */}
+            {documents.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileSignature className="w-5 h-5 text-primary" />
+                    Documents
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {documents.map((doc: Document) => {
+                    const docStatusBadge = () => {
+                      switch (doc.status) {
+                        case "signed": return <Badge variant="default" className="bg-green-500">Signed</Badge>;
+                        case "sent": case "viewed": return <Badge variant="secondary">Awaiting Signature</Badge>;
+                        case "draft": return <Badge variant="outline">Draft</Badge>;
+                        case "declined": return <Badge variant="destructive">Declined</Badge>;
+                        default: return <Badge variant="outline">{doc.status}</Badge>;
+                      }
+                    };
+                    return (
+                      <div 
+                        key={doc.id} 
+                        className="flex items-start justify-between p-3 rounded-lg bg-muted/50 gap-2 cursor-pointer hover-elevate"
+                        onClick={() => setSelectedDocument(doc)}
+                        data-testid={`document-${doc.id}`}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{doc.title}</p>
+                          <p className="text-xs text-muted-foreground capitalize">{doc.type}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {docStatusBadge()}
+                          <Eye className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Payment Section - Show when approved and deposit not paid */}
             {submission.status === "approved" && !payments.some(p => p.milestoneNumber === 1 && p.status === "completed") && (
               <Card className="border-primary">
@@ -352,6 +429,17 @@ export default function SubmissionDetail() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {/* Contract Required Warning */}
+                  {!contractStatus?.hasSignedContract && documents.some(d => d.type === "contract" && (d.status === "sent" || d.status === "viewed")) && (
+                    <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                      <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium">Contract Required</p>
+                        <p className="text-xs mt-1">Please sign the contract above before making payment.</p>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="text-center p-4 bg-muted/50 rounded-lg">
                     <p className="text-2xl font-bold">
                       ${((submission.budgetMin + submission.budgetMax) / 2 * 0.3).toFixed(2)}
@@ -361,7 +449,7 @@ export default function SubmissionDetail() {
                   <Button 
                     onClick={handleCardPayment} 
                     className="w-full gap-2" 
-                    disabled={paymentLoading !== null}
+                    disabled={paymentLoading !== null || (!contractStatus?.hasSignedContract && documents.some(d => d.type === "contract"))}
                     data-testid="button-pay-card"
                   >
                     {paymentLoading === "card" ? (
@@ -376,7 +464,7 @@ export default function SubmissionDetail() {
                       onClick={handleCryptoPayment} 
                       variant="outline"
                       className="w-full gap-2" 
-                      disabled={paymentLoading !== null}
+                      disabled={paymentLoading !== null || (!contractStatus?.hasSignedContract && documents.some(d => d.type === "contract"))}
                       data-testid="button-pay-crypto"
                     >
                       {paymentLoading === "crypto" ? (
@@ -448,6 +536,94 @@ export default function SubmissionDetail() {
           </div>
         </div>
       </main>
+
+      {/* Document Viewer Dialog */}
+      <Dialog open={!!selectedDocument && !signDialogOpen} onOpenChange={(open) => !open && setSelectedDocument(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileSignature className="w-5 h-5" />
+              {selectedDocument?.title}
+            </DialogTitle>
+            <DialogDescription className="capitalize">
+              {selectedDocument?.type} Document
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="prose prose-sm max-w-none dark:prose-invert">
+            <pre className="whitespace-pre-wrap font-sans text-sm bg-muted/50 p-4 rounded-lg">
+              {selectedDocument?.bodyMarkdown}
+            </pre>
+          </div>
+          
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            {selectedDocument?.status === "signed" && (
+              <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                <CheckCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">Signed on {selectedDocument.signedAt ? new Date(selectedDocument.signedAt).toLocaleDateString() : "N/A"}</span>
+              </div>
+            )}
+            {(selectedDocument?.status === "sent" || selectedDocument?.status === "viewed") && selectedDocument?.type === "contract" && (
+              <Button 
+                onClick={() => setSignDialogOpen(true)}
+                className="gap-2"
+                data-testid="button-open-sign-dialog"
+              >
+                <PenTool className="w-4 h-4" />
+                Sign This Document
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setSelectedDocument(null)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sign Document Dialog */}
+      <Dialog open={signDialogOpen} onOpenChange={setSignDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign Document</DialogTitle>
+            <DialogDescription>
+              By signing this document, you agree to the terms outlined in the contract.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="flex items-start space-x-3">
+              <Checkbox 
+                id="terms" 
+                checked={agreedToTerms}
+                onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                data-testid="checkbox-agree-terms"
+              />
+              <Label htmlFor="terms" className="text-sm leading-relaxed cursor-pointer">
+                I have read and agree to the terms outlined in this document. I understand that this constitutes a legally binding agreement.
+              </Label>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSignDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => selectedDocument && signDocument.mutate({ documentId: selectedDocument.id, agreedToTerms })}
+              disabled={!agreedToTerms || signDocument.isPending}
+              className="gap-2"
+              data-testid="button-confirm-sign"
+            >
+              {signDocument.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <PenTool className="w-4 h-4" />
+              )}
+              Sign Document
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

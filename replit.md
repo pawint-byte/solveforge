@@ -71,6 +71,10 @@ shared/                     # Shared types and schemas
 - **add_on_categories**: Admin-configurable add-on categories
 - **add_on_items**: Configurable add-on items with price ranges and timelines
 - **submission_add_ons**: Junction table linking submissions to selected add-ons
+- **document_templates**: Reusable document templates (estimate, contract, terms)
+- **documents**: Generated documents linked to submissions
+- **document_signers**: Signer records with status and signature data
+- **document_audit_logs**: Audit trail for document actions (created, sent, viewed, signed)
 
 ### Status Workflow
 Submissions follow this status progression:
@@ -142,6 +146,20 @@ Submissions follow this status progression:
 - `POST /api/admin/addons/items` - Create add-on item (admin)
 - `PATCH /api/admin/addons/items/:id` - Update item (admin)
 - `DELETE /api/admin/addons/items/:id` - Delete item (admin)
+
+### Legal Document Workflow
+- `GET /api/admin/document-templates` - Get all document templates (admin)
+- `POST /api/admin/document-templates` - Create document template (admin)
+- `PATCH /api/admin/document-templates/:id` - Update template (admin)
+- `DELETE /api/admin/document-templates/:id` - Delete template (admin)
+- `POST /api/admin/document-templates/seed` - Seed default templates (admin)
+- `GET /api/submissions/:id/documents` - Get documents for a submission
+- `GET /api/documents/:id` - Get single document with view logging
+- `POST /api/admin/submissions/:id/documents` - Create document from template (admin)
+- `POST /api/admin/documents/:id/send` - Send document to client (admin)
+- `POST /api/documents/:id/sign` - Sign document (client)
+- `GET /api/submissions/:id/contract-status` - Check if contract is signed
+- `GET /api/admin/documents/:id/audit-logs` - Get document audit trail (admin)
 
 ## Admin Configuration
 
@@ -236,6 +254,17 @@ The application runs via the "Start application" workflow which executes `npm ru
 - Add-ons automatically saved to submission when created
 - Admin interface for full CRUD operations on categories and items
 - Key components: `AddOnsBuilder` (user-facing), `AdminAddOnsManager` (admin CRUD interface)
+
+### Legal Document Workflow
+- Reusable document templates (estimate, contract, terms) with version control
+- Template variable substitution: `{{client_name}}`, `{{submission_id}}`, `{{date}}`, `{{description}}`, `{{addons_list}}`, `{{budget_min}}`, `{{budget_max}}`, `{{total_min}}`, `{{total_max}}`, `{{timeline}}`, `{{deposit_amount}}`, `{{midpoint_amount}}`, `{{final_amount}}`
+- Document lifecycle: draft → sent → viewed → signed (or declined)
+- Audit trail logging all document actions with timestamps and IP addresses
+- Payment gates: contract signature required before making deposit payments
+- User UI: Document viewer dialog, sign document flow with terms agreement
+- Admin UI: Template management, seed default templates, create documents from templates, send to clients
+- Key components: `AdminDocumentsManager` (admin template CRUD), submission-detail.tsx (user document viewer)
+- Document types: estimate (informational), contract (requires signature), terms (informational)
 
 ## Payment Structure
 
