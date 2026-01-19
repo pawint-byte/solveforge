@@ -7,6 +7,7 @@ import { z } from "zod";
 import { stripeService } from "./stripeService";
 import { getStripePublishableKey, getUncachableStripeClient } from "./stripeClient";
 import { addSubscriberToMailchimp, removeSubscriberFromMailchimp } from "./mailchimp";
+import * as heygen from "./heygen";
 
 // Admin user IDs - add your user ID here after first login
 const ADMIN_USER_IDS = new Set<string>([
@@ -1345,6 +1346,139 @@ We may update these terms with notice to active clients.
     } catch (error) {
       console.error("Error fetching audit logs:", error);
       res.status(500).json({ message: "Failed to fetch audit logs" });
+    }
+  });
+
+  // ============ HEYGEN VIDEO GENERATION ROUTES ============
+
+  // Check if HeyGen is available
+  app.get("/api/heygen/available", (req, res) => {
+    res.json({ available: heygen.isHeyGenAvailable() });
+  });
+
+  // List available avatars (admin only)
+  app.get("/api/admin/heygen/avatars", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!heygen.isHeyGenAvailable()) {
+        return res.status(503).json({ message: "HeyGen API is not configured" });
+      }
+      const avatars = await heygen.listAvatars();
+      res.json(avatars);
+    } catch (error: any) {
+      console.error("Error fetching HeyGen avatars:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch avatars" });
+    }
+  });
+
+  // List available voices (admin only)
+  app.get("/api/admin/heygen/voices", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!heygen.isHeyGenAvailable()) {
+        return res.status(503).json({ message: "HeyGen API is not configured" });
+      }
+      const voices = await heygen.listVoices();
+      res.json(voices);
+    } catch (error: any) {
+      console.error("Error fetching HeyGen voices:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch voices" });
+    }
+  });
+
+  // Generate video from URL and script (admin only)
+  app.post("/api/admin/heygen/generate", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!heygen.isHeyGenAvailable()) {
+        return res.status(503).json({ message: "HeyGen API is not configured" });
+      }
+
+      const { websiteUrl, script, avatarId, voiceId, aspectRatio, waitForCompletion, test } = req.body;
+
+      if (!script) {
+        return res.status(400).json({ message: "Script is required" });
+      }
+
+      const result = await heygen.generateVideoFromUrlAndScript(
+        websiteUrl || "",
+        script,
+        {
+          avatarId,
+          voiceId,
+          aspectRatio: aspectRatio || "16:9",
+          waitForCompletion: waitForCompletion || false,
+          test: test || false,
+        }
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error generating HeyGen video:", error);
+      res.status(500).json({ message: error.message || "Failed to generate video" });
+    }
+  });
+
+  // Check video status
+  app.get("/api/admin/heygen/video/:videoId", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!heygen.isHeyGenAvailable()) {
+        return res.status(503).json({ message: "HeyGen API is not configured" });
+      }
+
+      const status = await heygen.getVideoStatus(req.params.videoId);
+      res.json(status);
+    } catch (error: any) {
+      console.error("Error checking HeyGen video status:", error);
+      res.status(500).json({ message: error.message || "Failed to check video status" });
+    }
+  });
+
+  // Create avatar video with specific settings (admin only)
+  app.post("/api/admin/heygen/create-avatar-video", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!heygen.isHeyGenAvailable()) {
+        return res.status(503).json({ message: "HeyGen API is not configured" });
+      }
+
+      const { avatarId, voiceId, script, aspectRatio, backgroundColor, test } = req.body;
+
+      if (!avatarId || !voiceId || !script) {
+        return res.status(400).json({ message: "avatarId, voiceId, and script are required" });
+      }
+
+      const videoId = await heygen.createAvatarVideo(avatarId, voiceId, script, {
+        aspectRatio: aspectRatio || "16:9",
+        backgroundColor,
+        test: test || false,
+      });
+
+      res.json({ video_id: videoId, status: "pending" });
+    } catch (error: any) {
+      console.error("Error creating HeyGen avatar video:", error);
+      res.status(500).json({ message: error.message || "Failed to create video" });
+    }
+  });
+
+  // Create talking photo video (admin only)
+  app.post("/api/admin/heygen/create-talking-photo", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!heygen.isHeyGenAvailable()) {
+        return res.status(503).json({ message: "HeyGen API is not configured" });
+      }
+
+      const { photoUrl, voiceId, script, aspectRatio, test } = req.body;
+
+      if (!photoUrl || !voiceId || !script) {
+        return res.status(400).json({ message: "photoUrl, voiceId, and script are required" });
+      }
+
+      const videoId = await heygen.createTalkingPhotoVideo(photoUrl, voiceId, script, {
+        aspectRatio: aspectRatio || "16:9",
+        test: test || false,
+      });
+
+      res.json({ video_id: videoId, status: "pending" });
+    } catch (error: any) {
+      console.error("Error creating HeyGen talking photo video:", error);
+      res.status(500).json({ message: error.message || "Failed to create video" });
     }
   });
 
