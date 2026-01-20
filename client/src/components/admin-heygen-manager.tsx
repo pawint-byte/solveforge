@@ -110,6 +110,8 @@ export function AdminHeyGenManager() {
       if (data.destination_url) {
         setSavedDestinationUrl(data.destination_url);
       }
+      // Refresh the saved videos list to show updated info
+      refetchVideos();
       if (data.status === "completed") {
         toast({ title: "Video ready!", description: "Your video has been generated successfully." });
       } else if (data.status === "failed") {
@@ -206,7 +208,14 @@ export function AdminHeyGenManager() {
       duration: video.duration ? parseFloat(video.duration) : undefined,
     });
     setSavedDestinationUrl(video.destinationUrl || "");
-    toast({ title: "Video loaded", description: "You can now manage this video's settings." });
+    
+    // Auto-sync with HeyGen to get video URL if not already available
+    if (!video.videoUrl) {
+      checkStatus.mutate(video.videoId);
+      toast({ title: "Syncing video...", description: "Fetching video details from HeyGen." });
+    } else {
+      toast({ title: "Video loaded", description: "You can now manage this video's settings." });
+    }
   };
 
   return (
