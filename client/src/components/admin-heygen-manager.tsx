@@ -34,6 +34,17 @@ interface VideoResult {
   duration?: number;
 }
 
+interface SavedVideo {
+  id: string;
+  videoId: string;
+  status: string;
+  videoUrl: string | null;
+  thumbnailUrl: string | null;
+  destinationUrl: string | null;
+  duration: string | null;
+  createdAt: string;
+}
+
 export function AdminHeyGenManager() {
   const { toast } = useToast();
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
@@ -59,6 +70,11 @@ export function AdminHeyGenManager() {
 
   const { data: voices = [], isLoading: loadingVoices } = useQuery<Voice[]>({
     queryKey: ["/api/admin/heygen/voices"],
+    enabled: heygenAvailable?.available === true,
+  });
+
+  const { data: savedVideos = [], isLoading: loadingSavedVideos, refetch: refetchVideos } = useQuery<SavedVideo[]>({
+    queryKey: ["/api/admin/heygen/videos"],
     enabled: heygenAvailable?.available === true,
   });
 
@@ -142,6 +158,7 @@ export function AdminHeyGenManager() {
     onSuccess: (data) => {
       setSavedDestinationUrl(data.destination_url || "");
       setIsEditingUrl(false);
+      refetchVideos();
       toast({ title: "Destination URL updated!" });
     },
     onError: (error: Error) => {
@@ -179,8 +196,99 @@ export function AdminHeyGenManager() {
     }
   };
 
+  const selectSavedVideo = (video: SavedVideo) => {
+    setGeneratedVideoId(video.videoId);
+    setVideoStatus({
+      video_id: video.videoId,
+      status: video.status,
+      video_url: video.videoUrl || undefined,
+      thumbnail_url: video.thumbnailUrl || undefined,
+      duration: video.duration ? parseFloat(video.duration) : undefined,
+    });
+    setSavedDestinationUrl(video.destinationUrl || "");
+    toast({ title: "Video loaded", description: "You can now manage this video's settings." });
+  };
+
   return (
     <div className="space-y-6">
+      {savedVideos.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Video className="w-5 h-5" />
+              Saved Videos ({savedVideos.length})
+            </CardTitle>
+            <CardDescription>
+              Previously generated videos. Click to manage destination URL and sharing.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingSavedVideos ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading saved videos...
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {savedVideos.map((video) => (
+                  <div
+                    key={video.id}
+                    className={`flex items-center gap-4 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      generatedVideoId === video.videoId 
+                        ? "bg-primary/10 border-primary" 
+                        : "hover:bg-muted/50"
+                    }`}
+                    onClick={() => selectSavedVideo(video)}
+                    data-testid={`video-item-${video.videoId}`}
+                  >
+                    {video.thumbnailUrl ? (
+                      <img 
+                        src={video.thumbnailUrl} 
+                        alt="Video thumbnail"
+                        className="w-16 h-12 rounded object-cover"
+                      />
+                    ) : (
+                      <div className="w-16 h-12 rounded bg-muted flex items-center justify-center">
+                        <Video className="w-6 h-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-mono text-sm truncate">{video.videoId}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant={video.status === "completed" ? "default" : "secondary"}>
+                          {video.status}
+                        </Badge>
+                        {video.destinationUrl && (
+                          <Badge variant="outline" className="text-xs">
+                            Has URL
+                          </Badge>
+                        )}
+                        {video.duration && (
+                          <span className="text-xs text-muted-foreground">
+                            {Math.round(parseFloat(video.duration))}s
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant={generatedVideoId === video.videoId ? "default" : "outline"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectSavedVideo(video);
+                      }}
+                      data-testid={`button-select-video-${video.videoId}`}
+                    >
+                      {generatedVideoId === video.videoId ? "Selected" : "Manage"}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

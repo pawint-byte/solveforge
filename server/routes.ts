@@ -1356,6 +1356,17 @@ We may update these terms with notice to active clients.
     res.json({ available: heygen.isHeyGenAvailable() });
   });
 
+  // Get all generated videos from database (admin only)
+  app.get("/api/admin/heygen/videos", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const videos = await storage.getAllGeneratedVideos();
+      res.json(videos);
+    } catch (error: any) {
+      console.error("Error fetching generated videos:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch videos" });
+    }
+  });
+
   // List available avatars (admin only)
   app.get("/api/admin/heygen/avatars", isAuthenticated, isAdmin, async (req, res) => {
     try {
