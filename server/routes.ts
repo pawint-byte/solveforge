@@ -1502,6 +1502,7 @@ We may update these terms with notice to active clients.
       });
 
       // Save video metadata to database
+      const userId = (req.user as any)?.claims?.sub;
       await storage.createGeneratedVideo({
         videoId,
         avatarId,
@@ -1511,7 +1512,7 @@ We may update these terms with notice to active clients.
         backgroundImageUrl: backgroundImageUrl || null,
         destinationUrl: destinationUrl || null,
         status: "pending",
-        createdById: req.user!.claims.sub,
+        createdById: userId,
       });
 
       res.json({ video_id: videoId, status: "pending", destination_url: destinationUrl || null });
