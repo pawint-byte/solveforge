@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Video, User, Mic, Play, CheckCircle, Clock, AlertCircle, ExternalLink, Pencil, Save, X, Copy, Link } from "lucide-react";
+import { Loader2, Video, User, Mic, Play, CheckCircle, Clock, AlertCircle, ExternalLink, Pencil, Save, X, Copy, Link, Share2 } from "lucide-react";
+import { SiBluesky } from "react-icons/si";
 
 interface Avatar {
   avatar_id: string;
@@ -59,8 +60,14 @@ export function AdminHeyGenManager() {
   const [isEditingUrl, setIsEditingUrl] = useState<boolean>(false);
   const [editingUrlValue, setEditingUrlValue] = useState<string>("");
 
+  const [blueskyPostText, setBlueskyPostText] = useState<string>("");
+
   const { data: heygenAvailable } = useQuery<{ available: boolean }>({
     queryKey: ["/api/heygen/available"],
+  });
+
+  const { data: blueskyAvailable } = useQuery<{ available: boolean }>({
+    queryKey: ["/api/bluesky/available"],
   });
 
   const { data: avatars = [], isLoading: loadingAvatars } = useQuery<Avatar[]>({
@@ -182,6 +189,28 @@ export function AdminHeyGenManager() {
     },
     onError: (error: Error) => {
       toast({ title: "Failed to sync videos", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const postToBluesky = useMutation({
+    mutationFn: async ({ videoId, text }: { videoId: string; text: string }) => {
+      const response = await apiRequest("POST", "/api/admin/bluesky/post", {
+        videoId,
+        text,
+      });
+      return response.json();
+    },
+    onSuccess: (data: { postUrl: string }) => {
+      toast({ 
+        title: "Posted to Bluesky!", 
+        description: "Your video has been shared on Bluesky."
+      });
+      if (data.postUrl) {
+        window.open(data.postUrl, "_blank");
+      }
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to post to Bluesky", description: error.message, variant: "destructive" });
     },
   });
 
@@ -697,6 +726,47 @@ export function AdminHeyGenManager() {
                     </a>
                   </Button>
                 </div>
+
+                {/* Share to Bluesky */}
+                {blueskyAvailable?.available && (
+                  <div className="mt-4 p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg space-y-3">
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      <SiBluesky className="w-4 h-4 text-blue-500" />
+                      Share to Bluesky
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Post this video to your Bluesky feed with a custom message.
+                    </p>
+                    <Textarea
+                      value={blueskyPostText}
+                      onChange={(e) => setBlueskyPostText(e.target.value)}
+                      placeholder="Check out this video from SolveForge!"
+                      className="min-h-[80px]"
+                      data-testid="textarea-bluesky-post"
+                    />
+                    <Button
+                      onClick={() => postToBluesky.mutate({ 
+                        videoId: generatedVideoId, 
+                        text: blueskyPostText || "Check out this video from SolveForge!" 
+                      })}
+                      disabled={postToBluesky.isPending}
+                      className="w-full bg-blue-500 hover:bg-blue-600"
+                      data-testid="button-post-to-bluesky"
+                    >
+                      {postToBluesky.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Posting...
+                        </>
+                      ) : (
+                        <>
+                          <SiBluesky className="w-4 h-4 mr-2" />
+                          Post to Bluesky
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
