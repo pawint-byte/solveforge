@@ -132,6 +132,23 @@ export function AdminHeyGenManager() {
     },
   });
 
+  const updateDestinationUrl = useMutation({
+    mutationFn: async (newUrl: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/heygen/video/${generatedVideoId}`, {
+        destinationUrl: newUrl,
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setSavedDestinationUrl(data.destination_url || "");
+      setIsEditingUrl(false);
+      toast({ title: "Destination URL updated!" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to update URL", description: error.message, variant: "destructive" });
+    },
+  });
+
   if (!heygenAvailable?.available) {
     return (
       <Card>
@@ -428,11 +445,63 @@ export function AdminHeyGenManager() {
                     Duration: {Math.round(videoStatus.duration)}s
                   </p>
                 )}
-                {savedDestinationUrl && (
-                  <p className="text-sm text-muted-foreground">
-                    Destination: <a href={savedDestinationUrl} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">{savedDestinationUrl}</a>
-                  </p>
-                )}
+                
+                {/* Destination URL Editor */}
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg space-y-3">
+                  <Label className="text-sm font-medium">Destination URL (where viewers should go)</Label>
+                  {isEditingUrl ? (
+                    <div className="flex gap-2">
+                      <Input
+                        value={editingUrlValue}
+                        onChange={(e) => setEditingUrlValue(e.target.value)}
+                        placeholder="https://example.com"
+                        className="flex-1"
+                        data-testid="input-edit-destination-url"
+                      />
+                      <Button
+                        size="icon"
+                        onClick={() => updateDestinationUrl.mutate(editingUrlValue)}
+                        disabled={updateDestinationUrl.isPending}
+                        data-testid="button-save-destination-url"
+                      >
+                        {updateDestinationUrl.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => {
+                          setIsEditingUrl(false);
+                          setEditingUrlValue(savedDestinationUrl);
+                        }}
+                        data-testid="button-cancel-edit-url"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      {savedDestinationUrl ? (
+                        <a href={savedDestinationUrl} className="text-primary hover:underline flex-1 truncate" target="_blank" rel="noopener noreferrer">
+                          {savedDestinationUrl}
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground italic flex-1">No destination URL set</span>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setEditingUrlValue(savedDestinationUrl);
+                          setIsEditingUrl(true);
+                        }}
+                        data-testid="button-edit-destination-url"
+                      >
+                        <Pencil className="w-4 h-4 mr-2" />
+                        {savedDestinationUrl ? "Edit" : "Add URL"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </CardContent>
