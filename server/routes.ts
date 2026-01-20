@@ -1454,13 +1454,25 @@ We may update these terms with notice to active clients.
       }
 
       const videoId = req.params.videoId;
+      const userId = (req.user as any)?.claims?.sub;
       const status = await heygen.getVideoStatus(videoId);
       
       // Get saved video metadata from database
-      const savedVideo = await storage.getGeneratedVideo(videoId);
+      let savedVideo = await storage.getGeneratedVideo(videoId);
       
-      // Update database with latest status from HeyGen
-      if (savedVideo && status.status !== savedVideo.status) {
+      // If video doesn't exist in database (created before this feature), create it now
+      if (!savedVideo) {
+        await storage.createGeneratedVideo({
+          videoId,
+          status: status.status,
+          videoUrl: status.video_url || null,
+          thumbnailUrl: status.thumbnail_url || null,
+          duration: status.duration?.toString() || null,
+          createdById: userId,
+        });
+        savedVideo = await storage.getGeneratedVideo(videoId);
+      } else if (status.status !== savedVideo.status) {
+        // Update database with latest status from HeyGen
         await storage.updateGeneratedVideo(videoId, {
           status: status.status,
           videoUrl: status.video_url || null,
