@@ -8,6 +8,7 @@ import { stripeService } from "./stripeService";
 import { getStripePublishableKey, getUncachableStripeClient } from "./stripeClient";
 import { addSubscriberToMailchimp, removeSubscriberFromMailchimp } from "./mailchimp";
 import * as heygen from "./heygen";
+import * as bluesky from "./bluesky";
 
 // Admin user IDs - add your user ID here after first login
 const ADMIN_USER_IDS = new Set<string>([
@@ -1646,6 +1647,59 @@ We may update these terms with notice to active clients.
     } catch (error: any) {
       console.error("Error creating HeyGen talking photo video:", error);
       res.status(500).json({ message: error.message || "Failed to create video" });
+    }
+  });
+
+  // ============ BLUESKY SOCIAL MEDIA ROUTES ============
+
+  // Check if Bluesky is available
+  app.get("/api/bluesky/available", (req, res) => {
+    res.json({ available: bluesky.isBlueskyAvailable() });
+  });
+
+  // Post video to Bluesky (admin only)
+  app.post("/api/admin/bluesky/post", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!bluesky.isBlueskyAvailable()) {
+        return res.status(503).json({ message: "Bluesky is not configured. Add BLUESKY_HANDLE and BLUESKY_APP_PASSWORD secrets." });
+      }
+
+      const { videoId, text } = req.body;
+
+      if (!videoId) {
+        return res.status(400).json({ message: "videoId is required" });
+      }
+
+      const savedVideo = await storage.getGeneratedVideo(videoId);
+      if (!savedVideo) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      if (savedVideo.status !== "completed" || !savedVideo.videoUrl) {
+        return res.status(400).json({ message: "Video is not ready yet" });
+      }
+
+      // Build the video page URL
+      const videoPageUrl = `https://streamlit-demo--pawint.replit.app/video/${videoId}`;
+      
+      // Default text if not provided
+      const postText = text || "Check out this video from SolveForge!";
+
+      const result = await bluesky.postVideoToBluesky(
+        postText,
+        videoPageUrl,
+        savedVideo.thumbnailUrl || undefined
+      );
+
+      res.json({
+        success: true,
+        postUrl: result.postUrl,
+        uri: result.uri,
+        cid: result.cid,
+      });
+    } catch (error: any) {
+      console.error("Error posting to Bluesky:", error);
+      res.status(500).json({ message: error.message || "Failed to post to Bluesky" });
     }
   });
 
