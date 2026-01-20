@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Video, User, Mic, Play, CheckCircle, Clock, AlertCircle, ExternalLink, Pencil, Save, X } from "lucide-react";
+import { Loader2, Video, User, Mic, Play, CheckCircle, Clock, AlertCircle, ExternalLink, Pencil, Save, X, Copy, Link } from "lucide-react";
 
 interface Avatar {
   avatar_id: string;
@@ -501,6 +501,48 @@ export function AdminHeyGenManager() {
                       </Button>
                     </div>
                   )}
+                </div>
+
+                {/* Shareable Video Link */}
+                <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-3">
+                  <Label className="text-sm font-medium flex items-center gap-2">
+                    <Link className="w-4 h-4" />
+                    Shareable Video Link
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Share this link with viewers. They'll see the video with a "Visit Site" button.
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      value={`${window.location.origin}/video/${generatedVideoId}`}
+                      readOnly
+                      className="flex-1 bg-background"
+                      data-testid="input-shareable-link"
+                    />
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/video/${generatedVideoId}`);
+                        toast({ title: "Link copied!", description: "Shareable video link copied to clipboard." });
+                      }}
+                      data-testid="button-copy-shareable-link"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="w-full"
+                    data-testid="button-preview-video-page"
+                  >
+                    <a href={`/video/${generatedVideoId}`} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Preview Video Page
+                    </a>
+                  </Button>
                 </div>
               </div>
             )}

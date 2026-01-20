@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import SubmitPage from "@/pages/submit";
 import SubmissionDetail from "@/pages/submission-detail";
 import AdminDashboard from "@/pages/admin";
+import VideoPage from "@/pages/video";
 import { useEffect } from "react";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/submit" component={SubmitPage} />
       <Route path="/submissions/:id" component={SubmissionDetail} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/video/:videoId" component={VideoPage} />
       <Route component={NotFound} />
     </Switch>
   );

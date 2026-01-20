@@ -1416,6 +1416,36 @@ We may update these terms with notice to active clients.
     }
   });
 
+  // Public endpoint to get video details for viewing
+  app.get("/api/video/:videoId", async (req, res) => {
+    try {
+      const videoId = req.params.videoId;
+      
+      // Get saved video metadata from database
+      const savedVideo = await storage.getGeneratedVideo(videoId);
+      
+      if (!savedVideo) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      // Only return completed videos to the public
+      if (savedVideo.status !== "completed" || !savedVideo.videoUrl) {
+        return res.status(404).json({ message: "Video not available" });
+      }
+      
+      res.json({
+        video_id: savedVideo.videoId,
+        video_url: savedVideo.videoUrl,
+        thumbnail_url: savedVideo.thumbnailUrl,
+        destination_url: savedVideo.destinationUrl,
+        duration: savedVideo.duration ? parseFloat(savedVideo.duration) : null,
+      });
+    } catch (error: any) {
+      console.error("Error fetching video:", error);
+      res.status(500).json({ message: "Failed to fetch video" });
+    }
+  });
+
   // Check video status
   app.get("/api/admin/heygen/video/:videoId", isAuthenticated, isAdmin, async (req, res) => {
     try {
