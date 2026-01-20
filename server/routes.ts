@@ -1403,6 +1403,7 @@ We may update these terms with notice to active clients.
       }
 
       const { websiteUrl, script, avatarId, voiceId, aspectRatio, waitForCompletion, test } = req.body;
+      const userId = (req.user as any)?.claims?.sub;
 
       if (!script) {
         return res.status(400).json({ message: "Script is required" });
@@ -1419,6 +1420,22 @@ We may update these terms with notice to active clients.
           test: test || false,
         }
       );
+
+      // Save video to database immediately when generation starts
+      if (result.video_id) {
+        await storage.createGeneratedVideo({
+          videoId: result.video_id,
+          avatarId: avatarId || null,
+          voiceId: voiceId || null,
+          script,
+          aspectRatio: aspectRatio || "16:9",
+          status: result.status || "pending",
+          videoUrl: result.video_url || null,
+          thumbnailUrl: null,
+          duration: null,
+          createdById: userId,
+        });
+      }
 
       res.json(result);
     } catch (error: any) {
