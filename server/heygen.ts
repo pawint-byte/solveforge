@@ -149,6 +149,15 @@ export async function createAvatarVideo(
     test?: boolean;
   }
 ): Promise<string> {
+  // Use 720p dimension instead of aspect_ratio for Creator plan compatibility
+  const getDimension = (aspectRatio?: string) => {
+    switch (aspectRatio) {
+      case '9:16': return { width: 720, height: 1280 };
+      case '1:1': return { width: 720, height: 720 };
+      default: return { width: 1280, height: 720 }; // 16:9
+    }
+  };
+
   const payload: VideoGenerateRequest = {
     video_inputs: [
       {
@@ -163,7 +172,7 @@ export async function createAvatarVideo(
         },
       },
     ],
-    aspect_ratio: options?.aspectRatio || '16:9',
+    dimension: getDimension(options?.aspectRatio),
     test: options?.test || false,
   };
 
@@ -201,6 +210,15 @@ export async function createTalkingPhotoVideo(
     test?: boolean;
   }
 ): Promise<string> {
+  // Use 720p dimension instead of aspect_ratio for Creator plan compatibility
+  const getDimension = (aspectRatio?: string) => {
+    switch (aspectRatio) {
+      case '9:16': return { width: 720, height: 1280 };
+      case '1:1': return { width: 720, height: 720 };
+      default: return { width: 1280, height: 720 }; // 16:9
+    }
+  };
+
   const payload: VideoGenerateRequest = {
     video_inputs: [
       {
@@ -215,7 +233,7 @@ export async function createTalkingPhotoVideo(
         },
       },
     ],
-    aspect_ratio: options?.aspectRatio || '16:9',
+    dimension: getDimension(options?.aspectRatio),
     test: options?.test || false,
   };
 
