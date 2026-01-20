@@ -389,26 +389,24 @@ export function AdminHeyGenManager() {
               )}
             </div>
 
-            {videoStatus?.status !== "completed" && (
-              <Button
-                variant="outline"
-                onClick={() => checkStatus.mutate(generatedVideoId)}
-                disabled={checkStatus.isPending}
-                data-testid="button-check-status"
-              >
-                {checkStatus.isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Checking...
-                  </>
-                ) : (
-                  <>
-                    <Clock className="w-4 h-4 mr-2" />
-                    Check Status
-                  </>
-                )}
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              onClick={() => checkStatus.mutate(generatedVideoId)}
+              disabled={checkStatus.isPending}
+              data-testid="button-check-status"
+            >
+              {checkStatus.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {videoStatus?.status === "completed" ? "Syncing..." : "Checking..."}
+                </>
+              ) : (
+                <>
+                  <Clock className="w-4 h-4 mr-2" />
+                  {videoStatus?.status === "completed" ? "Refresh / Sync" : "Check Status"}
+                </>
+              )}
+            </Button>
 
             {videoStatus?.status === "completed" && videoStatus.video_url && (
               <div className="space-y-4">
