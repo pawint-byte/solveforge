@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, CheckSquare, Mail, BookOpen } from "lucide-react";
+import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, Mail, BookOpen } from "lucide-react";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { SocialShareButtons } from "@/components/social-share";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -240,28 +240,6 @@ export default function Landing() {
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     Track and manage dollar-cost averaging investments with portfolio analytics and performance insights.
-                  </p>
-                </CardContent>
-              </Card>
-            </a>
-            <a 
-              href="https://secure-tasker--pawint.replit.app" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block"
-              data-testid="link-portfolio-securetasker"
-            >
-              <Card className="h-full hover-elevate cursor-pointer group">
-                <CardContent className="pt-6 pb-6">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
-                    <CheckSquare className="w-6 h-6 text-emerald-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-                    Secure Tasker
-                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    A secure task management app with encrypted data storage for privacy-conscious productivity.
                   </p>
                 </CardContent>
               </Card>
