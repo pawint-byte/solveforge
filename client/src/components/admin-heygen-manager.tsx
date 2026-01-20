@@ -168,6 +168,23 @@ export function AdminHeyGenManager() {
     },
   });
 
+  const syncAllVideos = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/admin/heygen/sync-all");
+      return response.json();
+    },
+    onSuccess: (data: { synced: number; failed: number; total: number }) => {
+      refetchVideos();
+      toast({ 
+        title: "Videos synced!", 
+        description: `Synced ${data.synced} of ${data.total} videos${data.failed > 0 ? ` (${data.failed} failed)` : ""}.`
+      });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to sync videos", description: error.message, variant: "destructive" });
+    },
+  });
+
   if (!heygenAvailable?.available) {
     return (
       <Card>
@@ -223,10 +240,31 @@ export function AdminHeyGenManager() {
       {savedVideos.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Video className="w-5 h-5" />
-              Saved Videos ({savedVideos.length})
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5" />
+                Saved Videos ({savedVideos.length})
+              </CardTitle>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => syncAllVideos.mutate()}
+                disabled={syncAllVideos.isPending}
+                data-testid="button-sync-all-videos"
+              >
+                {syncAllVideos.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Syncing...
+                  </>
+                ) : (
+                  <>
+                    <Clock className="w-4 h-4 mr-2" />
+                    Sync All
+                  </>
+                )}
+              </Button>
+            </div>
             <CardDescription>
               Previously generated videos. Click to manage destination URL and sharing.
             </CardDescription>

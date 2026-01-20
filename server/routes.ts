@@ -1367,6 +1367,42 @@ We may update these terms with notice to active clients.
     }
   });
 
+  // Sync all pending videos with HeyGen (admin only)
+  app.post("/api/admin/heygen/sync-all", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      if (!heygen.isHeyGenAvailable()) {
+        return res.status(503).json({ message: "HeyGen API is not configured" });
+      }
+
+      const videos = await storage.getAllGeneratedVideos();
+      const pendingVideos = videos.filter(v => !v.videoUrl || v.status !== "completed");
+      
+      let synced = 0;
+      let failed = 0;
+      
+      for (const video of pendingVideos) {
+        try {
+          const status = await heygen.getVideoStatus(video.videoId);
+          await storage.updateGeneratedVideo(video.videoId, {
+            status: status.status,
+            videoUrl: status.video_url || null,
+            thumbnailUrl: status.thumbnail_url || null,
+            duration: status.duration?.toString() || null,
+          });
+          synced++;
+        } catch (err) {
+          console.error(`Failed to sync video ${video.videoId}:`, err);
+          failed++;
+        }
+      }
+      
+      res.json({ synced, failed, total: pendingVideos.length });
+    } catch (error: any) {
+      console.error("Error syncing videos:", error);
+      res.status(500).json({ message: error.message || "Failed to sync videos" });
+    }
+  });
+
   // List available avatars (admin only)
   app.get("/api/admin/heygen/avatars", isAuthenticated, isAdmin, async (req, res) => {
     try {
@@ -1610,6 +1646,118 @@ We may update these terms with notice to active clients.
     } catch (error: any) {
       console.error("Error creating HeyGen talking photo video:", error);
       res.status(500).json({ message: error.message || "Failed to create video" });
+    }
+  });
+
+  // ============ SOCIAL MEDIA PREVIEW FOR VIDEO PAGES ============
+  // Helper to escape HTML entities for safe meta tag content
+  function escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+  
+  // Serve special HTML with Open Graph/Twitter meta tags for social media crawlers
+  app.get("/video/:videoId", async (req, res, next) => {
+    const userAgent = req.headers["user-agent"] || "";
+    
+    // Detect social media crawlers
+    const socialCrawlers = [
+      "facebookexternalhit",
+      "Facebot",
+      "Twitterbot",
+      "LinkedInBot",
+      "Pinterest",
+      "Slackbot",
+      "TelegramBot",
+      "WhatsApp",
+      "Discordbot",
+      "vkShare",
+      "W3C_Validator",
+    ];
+    
+    const isSocialCrawler = socialCrawlers.some(crawler => 
+      userAgent.toLowerCase().includes(crawler.toLowerCase())
+    );
+    
+    // For regular users, let Vite handle it
+    if (!isSocialCrawler) {
+      return next();
+    }
+    
+    try {
+      const videoId = req.params.videoId;
+      const savedVideo = await storage.getGeneratedVideo(videoId);
+      
+      if (!savedVideo || savedVideo.status !== "completed" || !savedVideo.videoUrl) {
+        return next(); // Let Vite handle 404
+      }
+      
+      // Build the full URL for this page
+      const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
+      const host = req.headers["x-forwarded-host"] || req.headers.host || "solveforge.pawint-app.com";
+      const pageUrl = `${protocol}://${host}/video/${videoId}`;
+      
+      // Use thumbnail if available, otherwise use a default
+      const thumbnailUrl = savedVideo.thumbnailUrl || `${protocol}://${host}/favicon.png`;
+      
+      // Create description from script or default - escape for HTML safety
+      const rawDescription = savedVideo.script 
+        ? savedVideo.script.substring(0, 200) + (savedVideo.script.length > 200 ? "..." : "")
+        : "Watch this video and discover more at SolveForge";
+      const description = escapeHtml(rawDescription);
+      
+      const title = "SolveForge Video";
+      const siteName = "SolveForge";
+      
+      // Serve minimal HTML with proper meta tags for social previews
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <meta name="description" content="${description}">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="video.other">
+  <meta property="og:url" content="${pageUrl}">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:image" content="${thumbnailUrl}">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <meta property="og:site_name" content="${siteName}">
+  <meta property="og:video" content="${savedVideo.videoUrl}">
+  <meta property="og:video:type" content="video/mp4">
+  <meta property="og:video:width" content="1280">
+  <meta property="og:video:height" content="720">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="${pageUrl}">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${description}">
+  <meta name="twitter:image" content="${thumbnailUrl}">
+  <meta name="twitter:player" content="${savedVideo.videoUrl}">
+  <meta name="twitter:player:width" content="1280">
+  <meta name="twitter:player:height" content="720">
+  
+  <!-- Redirect regular browsers to the full page -->
+  <meta http-equiv="refresh" content="0;url=${pageUrl}">
+</head>
+<body>
+  <p>Redirecting to <a href="${pageUrl}">${pageUrl}</a>...</p>
+</body>
+</html>`;
+      
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
+    } catch (error) {
+      console.error("Error serving video preview:", error);
+      next(); // Let Vite handle errors
     }
   });
 
