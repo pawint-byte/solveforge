@@ -12,7 +12,8 @@ import {
   documentTemplates, type DocumentTemplate, type InsertDocumentTemplate,
   documents, type Document, type InsertDocument,
   documentSigners, type DocumentSigner, type InsertDocumentSigner,
-  documentAuditLogs, type DocumentAuditLog, type InsertDocumentAuditLog
+  documentAuditLogs, type DocumentAuditLog, type InsertDocumentAuditLog,
+  generatedVideos, type GeneratedVideo, type InsertGeneratedVideo
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, isNull, sql } from "drizzle-orm";
@@ -104,6 +105,12 @@ export interface IStorage {
   // Document Audit Logs
   createDocumentAuditLog(data: InsertDocumentAuditLog): Promise<DocumentAuditLog>;
   getDocumentAuditLogs(documentId: string): Promise<DocumentAuditLog[]>;
+  
+  // Generated Videos
+  createGeneratedVideo(data: InsertGeneratedVideo): Promise<GeneratedVideo>;
+  getGeneratedVideo(videoId: string): Promise<GeneratedVideo | undefined>;
+  updateGeneratedVideo(videoId: string, data: Partial<GeneratedVideo>): Promise<GeneratedVideo | undefined>;
+  getAllGeneratedVideos(): Promise<GeneratedVideo[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -472,6 +479,29 @@ export class DatabaseStorage implements IStorage {
 
   async getDocumentAuditLogs(documentId: string): Promise<DocumentAuditLog[]> {
     return db.select().from(documentAuditLogs).where(eq(documentAuditLogs.documentId, documentId)).orderBy(desc(documentAuditLogs.createdAt));
+  }
+
+  // Generated Videos
+  async createGeneratedVideo(data: InsertGeneratedVideo): Promise<GeneratedVideo> {
+    const [result] = await db.insert(generatedVideos).values(data).returning();
+    return result;
+  }
+
+  async getGeneratedVideo(videoId: string): Promise<GeneratedVideo | undefined> {
+    const [result] = await db.select().from(generatedVideos).where(eq(generatedVideos.videoId, videoId));
+    return result;
+  }
+
+  async updateGeneratedVideo(videoId: string, data: Partial<GeneratedVideo>): Promise<GeneratedVideo | undefined> {
+    const [result] = await db.update(generatedVideos)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(generatedVideos.videoId, videoId))
+      .returning();
+    return result;
+  }
+
+  async getAllGeneratedVideos(): Promise<GeneratedVideo[]> {
+    return db.select().from(generatedVideos).orderBy(desc(generatedVideos.createdAt));
   }
 }
 

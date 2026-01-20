@@ -427,6 +427,31 @@ export const insertDocumentAuditLogSchema = createInsertSchema(documentAuditLogs
   createdAt: true,
 });
 
+// HeyGen Generated Videos Table
+export const generatedVideos = pgTable("generated_videos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  videoId: varchar("video_id").notNull().unique(),
+  avatarId: varchar("avatar_id"),
+  voiceId: varchar("voice_id"),
+  script: text("script"),
+  aspectRatio: varchar("aspect_ratio", { length: 10 }),
+  backgroundImageUrl: text("background_image_url"),
+  destinationUrl: text("destination_url"),
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  videoUrl: text("video_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  duration: decimal("duration", { precision: 10, scale: 3 }),
+  createdById: varchar("created_by_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertGeneratedVideoSchema = createInsertSchema(generatedVideos).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type Submission = typeof submissions.$inferSelect;
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
@@ -456,3 +481,5 @@ export type DocumentSigner = typeof documentSigners.$inferSelect;
 export type InsertDocumentSigner = z.infer<typeof insertDocumentSignerSchema>;
 export type DocumentAuditLog = typeof documentAuditLogs.$inferSelect;
 export type InsertDocumentAuditLog = z.infer<typeof insertDocumentAuditLogSchema>;
+export type GeneratedVideo = typeof generatedVideos.$inferSelect;
+export type InsertGeneratedVideo = z.infer<typeof insertGeneratedVideoSchema>;

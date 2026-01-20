@@ -1423,8 +1423,28 @@ We may update these terms with notice to active clients.
         return res.status(503).json({ message: "HeyGen API is not configured" });
       }
 
-      const status = await heygen.getVideoStatus(req.params.videoId);
-      res.json(status);
+      const videoId = req.params.videoId;
+      const status = await heygen.getVideoStatus(videoId);
+      
+      // Get saved video metadata from database
+      const savedVideo = await storage.getGeneratedVideo(videoId);
+      
+      // Update database with latest status from HeyGen
+      if (savedVideo && status.status !== savedVideo.status) {
+        await storage.updateGeneratedVideo(videoId, {
+          status: status.status,
+          videoUrl: status.video_url || null,
+          thumbnailUrl: status.thumbnail_url || null,
+          duration: status.duration?.toString() || null,
+        });
+      }
+      
+      // Return combined data
+      res.json({
+        ...status,
+        destination_url: savedVideo?.destinationUrl || null,
+        background_image_url: savedVideo?.backgroundImageUrl || null,
+      });
     } catch (error: any) {
       console.error("Error checking HeyGen video status:", error);
       res.status(500).json({ message: error.message || "Failed to check video status" });
@@ -1438,7 +1458,7 @@ We may update these terms with notice to active clients.
         return res.status(503).json({ message: "HeyGen API is not configured" });
       }
 
-      const { avatarId, voiceId, script, aspectRatio, backgroundColor, test } = req.body;
+      const { avatarId, voiceId, script, aspectRatio, backgroundColor, backgroundImageUrl, destinationUrl, test } = req.body;
 
       if (!avatarId || !voiceId || !script) {
         return res.status(400).json({ message: "avatarId, voiceId, and script are required" });
@@ -1447,10 +1467,24 @@ We may update these terms with notice to active clients.
       const videoId = await heygen.createAvatarVideo(avatarId, voiceId, script, {
         aspectRatio: aspectRatio || "16:9",
         backgroundColor,
+        backgroundImageUrl,
         test: test || false,
       });
 
-      res.json({ video_id: videoId, status: "pending" });
+      // Save video metadata to database
+      await storage.createGeneratedVideo({
+        videoId,
+        avatarId,
+        voiceId,
+        script,
+        aspectRatio: aspectRatio || "16:9",
+        backgroundImageUrl: backgroundImageUrl || null,
+        destinationUrl: destinationUrl || null,
+        status: "pending",
+        createdById: req.user!.claims.sub,
+      });
+
+      res.json({ video_id: videoId, status: "pending", destination_url: destinationUrl || null });
     } catch (error: any) {
       console.error("Error creating HeyGen avatar video:", error);
       res.status(500).json({ message: error.message || "Failed to create video" });

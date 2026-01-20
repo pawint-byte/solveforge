@@ -146,6 +146,7 @@ export async function createAvatarVideo(
   options?: {
     aspectRatio?: '16:9' | '9:16' | '1:1';
     backgroundColor?: string;
+    backgroundImageUrl?: string;
     test?: boolean;
   }
 ): Promise<string> {
@@ -176,8 +177,13 @@ export async function createAvatarVideo(
     test: options?.test || false,
   };
 
-  // Add background if specified
-  if (options?.backgroundColor) {
+  // Add background if specified (image takes priority over color)
+  if (options?.backgroundImageUrl) {
+    payload.video_inputs[0].background = {
+      type: 'image',
+      url: options.backgroundImageUrl,
+    };
+  } else if (options?.backgroundColor) {
     payload.video_inputs[0].background = {
       type: 'color',
       value: options.backgroundColor,

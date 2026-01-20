@@ -39,10 +39,12 @@ export function AdminHeyGenManager() {
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [selectedVoice, setSelectedVoice] = useState<string>("");
   const [script, setScript] = useState<string>("");
-  const [websiteUrl, setWebsiteUrl] = useState<string>("");
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>("");
+  const [destinationUrl, setDestinationUrl] = useState<string>("");
   const [aspectRatio, setAspectRatio] = useState<string>("16:9");
   const [generatedVideoId, setGeneratedVideoId] = useState<string>("");
   const [videoStatus, setVideoStatus] = useState<VideoResult | null>(null);
+  const [savedDestinationUrl, setSavedDestinationUrl] = useState<string>("");
 
   const { data: heygenAvailable } = useQuery<{ available: boolean }>({
     queryKey: ["/api/heygen/available"],
@@ -62,7 +64,6 @@ export function AdminHeyGenManager() {
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/admin/heygen/generate", {
         script,
-        websiteUrl: websiteUrl || undefined,
         avatarId: selectedAvatar || undefined,
         voiceId: selectedVoice || undefined,
         aspectRatio,
@@ -88,6 +89,9 @@ export function AdminHeyGenManager() {
     },
     onSuccess: (data) => {
       setVideoStatus(data);
+      if (data.destination_url) {
+        setSavedDestinationUrl(data.destination_url);
+      }
       if (data.status === "completed") {
         toast({ title: "Video ready!", description: "Your video has been generated successfully." });
       } else if (data.status === "failed") {
@@ -109,6 +113,8 @@ export function AdminHeyGenManager() {
         voiceId: selectedVoice,
         script,
         aspectRatio,
+        backgroundImageUrl: backgroundImageUrl || undefined,
+        destinationUrl: destinationUrl || undefined,
         test: false,
       });
       return response.json();
@@ -116,6 +122,7 @@ export function AdminHeyGenManager() {
     onSuccess: (data) => {
       setGeneratedVideoId(data.video_id);
       setVideoStatus({ video_id: data.video_id, status: "pending" });
+      setSavedDestinationUrl(data.destination_url || destinationUrl || "");
       toast({ title: "Avatar video generation started!" });
     },
     onError: (error: Error) => {
@@ -257,16 +264,30 @@ export function AdminHeyGenManager() {
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="websiteUrl">Website URL (Optional)</Label>
+                <Label htmlFor="backgroundImageUrl">Background Image URL (Optional)</Label>
                 <Input
-                  id="websiteUrl"
-                  placeholder="https://example.com"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  data-testid="input-website-url"
+                  id="backgroundImageUrl"
+                  placeholder="https://example.com/screenshot.png"
+                  value={backgroundImageUrl}
+                  onChange={(e) => setBackgroundImageUrl(e.target.value)}
+                  data-testid="input-background-image-url"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Include a website to show in the video background
+                  Add a screenshot or image to show behind the avatar
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="destinationUrl">Destination URL (Optional)</Label>
+                <Input
+                  id="destinationUrl"
+                  placeholder="https://example.com"
+                  value={destinationUrl}
+                  onChange={(e) => setDestinationUrl(e.target.value)}
+                  data-testid="input-destination-url"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Where viewers should go after watching the video
                 </p>
               </div>
 
@@ -379,7 +400,7 @@ export function AdminHeyGenManager() {
                     className="rounded-lg max-w-md"
                   />
                 )}
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <Button asChild data-testid="button-view-video">
                     <a href={videoStatus.video_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-2" />
@@ -391,10 +412,23 @@ export function AdminHeyGenManager() {
                       Download
                     </a>
                   </Button>
+                  {savedDestinationUrl && (
+                    <Button variant="secondary" asChild data-testid="button-visit-site">
+                      <a href={savedDestinationUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Visit Site
+                      </a>
+                    </Button>
+                  )}
                 </div>
                 {videoStatus.duration && (
                   <p className="text-sm text-muted-foreground">
                     Duration: {Math.round(videoStatus.duration)}s
+                  </p>
+                )}
+                {savedDestinationUrl && (
+                  <p className="text-sm text-muted-foreground">
+                    Destination: <a href={savedDestinationUrl} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">{savedDestinationUrl}</a>
                   </p>
                 )}
               </div>
