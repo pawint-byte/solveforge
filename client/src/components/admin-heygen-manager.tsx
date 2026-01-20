@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Video, User, Mic, Play, CheckCircle, Clock, AlertCircle, ExternalLink } from "lucide-react";
+import { Loader2, Video, User, Mic, Play, CheckCircle, Clock, AlertCircle, ExternalLink, Pencil, Save, X } from "lucide-react";
 
 interface Avatar {
   avatar_id: string;
@@ -45,6 +45,8 @@ export function AdminHeyGenManager() {
   const [generatedVideoId, setGeneratedVideoId] = useState<string>("");
   const [videoStatus, setVideoStatus] = useState<VideoResult | null>(null);
   const [savedDestinationUrl, setSavedDestinationUrl] = useState<string>("");
+  const [isEditingUrl, setIsEditingUrl] = useState<boolean>(false);
+  const [editingUrlValue, setEditingUrlValue] = useState<string>("");
 
   const { data: heygenAvailable } = useQuery<{ available: boolean }>({
     queryKey: ["/api/heygen/available"],

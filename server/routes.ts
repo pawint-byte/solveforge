@@ -1491,6 +1491,32 @@ We may update these terms with notice to active clients.
     }
   });
 
+  // Update video destination URL (admin only)
+  app.patch("/api/admin/heygen/video/:videoId", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { videoId } = req.params;
+      const { destinationUrl } = req.body;
+
+      if (destinationUrl === undefined) {
+        return res.status(400).json({ message: "destinationUrl is required" });
+      }
+
+      const savedVideo = await storage.getGeneratedVideo(videoId);
+      if (!savedVideo) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      await storage.updateGeneratedVideo(videoId, {
+        destinationUrl: destinationUrl || null,
+      });
+
+      res.json({ success: true, destination_url: destinationUrl || null });
+    } catch (error: any) {
+      console.error("Error updating video destination URL:", error);
+      res.status(500).json({ message: error.message || "Failed to update video" });
+    }
+  });
+
   // Create talking photo video (admin only)
   app.post("/api/admin/heygen/create-talking-photo", isAuthenticated, isAdmin, async (req, res) => {
     try {
