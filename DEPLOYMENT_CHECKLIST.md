@@ -64,11 +64,12 @@
 | URL | App | Status |
 |-----|-----|--------|
 | `pawint-app.com` | SolveForge | ✅ Done |
-| `apphub.pawint-app.com` | App Hub | Pending verification |
-| `glammarket.pawint-app.com` | Glam Market | To do |
-| `kinship.pawint-app.com` | Kinship Chronicle | To do |
-| `dca.pawint-app.com` | DCA Portfolio | To do |
-| `storyweaver.pawint-app.com` | Story Weaver | To do |
+| `apphub.pawint-app.com` | App Hub | ✅ Done |
+| `glammarket.pawint-app.com` | Glam Market | ✅ Done |
+| `kinship.pawint-app.com` | Kinship Chronicle | ✅ Done |
+| `dca.pawint-app.com` | DCA Portfolio | ✅ Done |
+| `storyweaver.pawint-app.com` | Story Weaver | ✅ Done |
+| `paygate.pawint-app.com` | Pay Gate Dating | To do |
 
 ---
 
