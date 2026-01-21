@@ -9,6 +9,7 @@ import { getStripePublishableKey, getUncachableStripeClient } from "./stripeClie
 import { addSubscriberToMailchimp, removeSubscriberFromMailchimp } from "./mailchimp";
 import * as heygen from "./heygen";
 import * as bluesky from "./bluesky";
+import * as email from "./email";
 import OpenAI from "openai";
 
 // Initialize OpenAI client for AI submission assistant
@@ -74,6 +75,26 @@ export async function registerRoutes(
             customNotes: addon.customNotes || null,
           });
         }
+      }
+      
+      // Send email notifications (non-blocking)
+      const userEmail = req.user.claims.email;
+      email.sendAdminNewSubmissionNotification({
+        id: submission.id,
+        title: submission.title,
+        description: submission.description || '',
+        budgetMin: submission.budgetMin || 0,
+        budgetMax: submission.budgetMax || 0,
+        category: submission.category || 'other',
+        timeline: submission.timeline || 'flexible',
+        userEmail,
+      }).catch(err => console.error('Admin notification failed:', err));
+      
+      if (userEmail) {
+        email.sendUserSubmissionConfirmation(userEmail, {
+          id: submission.id,
+          title: submission.title,
+        }).catch(err => console.error('User confirmation failed:', err));
       }
       
       res.status(201).json(submission);
@@ -198,6 +219,12 @@ Provide only the improved description, nothing else.`;
     res.json({ available: isAvailable });
   });
 
+  // Check if email notifications are configured
+  app.get("/api/email/available", async (req, res) => {
+    const available = await email.isEmailAvailable();
+    res.json({ available });
+  });
+
   // ============ ADMIN ROUTES ============
 
   // Get all submissions (admin only)
@@ -222,6 +249,9 @@ Provide only the improved description, nothing else.`;
         return res.status(400).json({ message: "Invalid status value" });
       }
       
+      // Get original submission to check for status change
+      const originalSubmission = await storage.getSubmission(req.params.id);
+      
       const submission = await storage.updateSubmission(req.params.id, { 
         status, 
         adminNotes 
@@ -229,6 +259,18 @@ Provide only the improved description, nothing else.`;
       
       if (!submission) {
         return res.status(404).json({ message: "Submission not found" });
+      }
+      
+      // Send status update email if status changed
+      if (status && originalSubmission && originalSubmission.status !== status) {
+        const user = await storage.getUser(submission.userId);
+        if (user?.email) {
+          email.sendStatusUpdateNotification(user.email, {
+            id: submission.id,
+            title: submission.title,
+            status: status,
+          }).catch(err => console.error('Status notification failed:', err));
+        }
       }
       
       res.json(submission);
