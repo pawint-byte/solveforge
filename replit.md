@@ -176,6 +176,13 @@ Submissions follow this status progression:
   - Body: `{ description: string, action: "improve"|"expand"|"simplify"|"suggest" }`
   - Returns: `{ result: string }` with AI-improved text
 
+### Email Notifications (Resend)
+- `GET /api/email/available` - Check if email notifications are configured
+- Automatic notifications sent on:
+  - New submission → Admin receives notification at pawint@pawint-app.com
+  - New submission → User receives confirmation email
+  - Status change → User receives status update email
+
 ## Admin Configuration
 
 To grant admin access, add user IDs to the `ADMIN_USER_IDS` set in `server/routes.ts`:
