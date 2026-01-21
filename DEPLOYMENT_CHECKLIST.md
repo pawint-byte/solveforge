@@ -177,6 +177,7 @@ Use this checklist when building any new app to ensure all standard features are
 |----------|---------|----------|
 | `DATABASE_URL` | PostgreSQL connection | Yes (auto-provided by Replit) |
 | `SESSION_SECRET` | Session encryption | Yes |
+| `RESEND_API_KEY` | Email notifications | If email notifications |
 | `STRIPE_SECRET_KEY` | Stripe payments | If payments enabled |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhooks | If payments enabled |
 | `BLUESKY_HANDLE` | Bluesky posting | If social sharing |
@@ -184,6 +185,71 @@ Use this checklist when building any new app to ensure all standard features are
 | `HEYGEN_API_KEY` | AI video generation | If video features |
 | `MAILCHIMP_API_KEY` | Newsletter | If email marketing |
 | `MAILCHIMP_LIST_ID` | Newsletter list | If email marketing |
+
+### Email Notifications Setup (Resend)
+
+**Step 1: Install package**
+```bash
+npm install resend
+```
+
+**Step 2: Create server/email.ts**
+```typescript
+import { Resend } from 'resend';
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+const ADMIN_EMAIL = 'pawint@pawint-app.com';
+const FROM_EMAIL = 'notifications@pawint-app.com';
+
+export async function isEmailAvailable(): Promise<boolean> {
+  return !!resend;
+}
+
+export async function sendEmail(
+  to: string,
+  subject: string,
+  html: string
+): Promise<boolean> {
+  if (!resend) return false;
+  try {
+    const { error } = await resend.emails.send({
+      from: `[App Name] <${FROM_EMAIL}>`,
+      to: [to],
+      subject,
+      html,
+    });
+    return !error;
+  } catch (e) {
+    console.error('Email error:', e);
+    return false;
+  }
+}
+
+// Add app-specific email functions (customize templates per app)
+export async function sendAdminNotification(subject: string, content: string) {
+  return sendEmail(ADMIN_EMAIL, subject, content);
+}
+```
+
+**Step 3: Add API endpoint in routes.ts**
+```typescript
+import * as email from "./email";
+
+// Check email availability
+app.get("/api/email/available", async (req, res) => {
+  const available = await email.isEmailAvailable();
+  res.json({ available });
+});
+```
+
+**Step 4: Add RESEND_API_KEY secret**
+- Use the same key across all apps: `re_JcAYcKVc_JsJVVnUcuivZC6gdyDPDDeMj`
+
+**Step 5: Verify domain (one-time)**
+- Go to resend.com/domains
+- Add pawint-app.com
+- Add DNS records in Squarespace
 
 ### manifest.json Template (public/manifest.json)
 
@@ -210,6 +276,8 @@ Use this checklist when building any new app to ensure all standard features are
 - [ ] **Replit Auth** - User login/signup
 - [ ] **PostgreSQL Database** - Data persistence  
 - [ ] **Stripe** - Payment processing (if needed)
+- [ ] **Resend Email** - Notifications (if needed)
+- [ ] **OpenAI** - AI features (if needed)
 - [ ] **Favicon** - 192x192 PNG minimum
 - [ ] **OG Image** - 1200x630 preview image for social shares
 
@@ -223,6 +291,8 @@ Use this checklist when building any new app to ensure all standard features are
 - [ ] Dark mode support working
 - [ ] All environment secrets configured
 - [ ] Payment flow tested (if applicable)
+- [ ] Email notifications tested (if applicable)
+- [ ] API endpoints return correct responses
 
 ---
 
