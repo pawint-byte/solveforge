@@ -20,6 +20,7 @@ import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/auth-utils";
 import { AddOnsBuilder, AddOnsSummary, type SelectedAddOn } from "@/components/addons-builder";
+import { AISubmissionAssistant } from "@/components/ai-submission-assistant";
 
 const formSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(200, "Title must be less than 200 characters"),
@@ -206,6 +207,13 @@ export default function SubmitPage() {
                         The more detail you provide, the better. Include context, requirements, and any existing work.
                       </FormDescription>
                       <FormMessage />
+                      
+                      <AISubmissionAssistant 
+                        description={field.value}
+                        onApply={(improvedDescription) => {
+                          form.setValue("description", improvedDescription);
+                        }}
+                      />
                     </FormItem>
                   )}
                 />

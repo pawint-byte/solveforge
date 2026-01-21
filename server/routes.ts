@@ -9,6 +9,13 @@ import { getStripePublishableKey, getUncachableStripeClient } from "./stripeClie
 import { addSubscriberToMailchimp, removeSubscriberFromMailchimp } from "./mailchimp";
 import * as heygen from "./heygen";
 import * as bluesky from "./bluesky";
+import OpenAI from "openai";
+
+// Initialize OpenAI client for AI submission assistant
+const openai = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
 
 // Admin user IDs - add your user ID here after first login
 const ADMIN_USER_IDS = new Set<string>([
@@ -112,6 +119,83 @@ export async function registerRoutes(
       console.error("Error fetching submission:", error);
       res.status(500).json({ message: "Failed to fetch submission" });
     }
+  });
+
+  // ============ AI SUBMISSION ASSISTANT ============
+
+  // AI assistant to help users write better problem descriptions
+  app.post("/api/ai/improve-description", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { description, action } = req.body;
+
+      if (!description || typeof description !== "string") {
+        return res.status(400).json({ error: "Description is required" });
+      }
+
+      const systemPrompt = `You are an expert problem submission assistant for SolveForge, a platform where users submit problems they need solved. Your role is to help users write clear, detailed, and actionable problem descriptions.
+
+When helping users, focus on:
+- Clarity: Make sure the problem is easy to understand
+- Specificity: Include concrete details, requirements, and constraints
+- Context: Explain why the problem matters and what success looks like
+- Scope: Help define boundaries and deliverables
+
+Keep your responses concise and helpful. Don't add unnecessary filler words.`;
+
+      let userPrompt = "";
+      
+      if (action === "improve") {
+        userPrompt = `Please improve this problem description to make it clearer and more detailed. Keep the original intent but make it easier for someone to understand exactly what needs to be solved:
+
+"${description}"
+
+Provide only the improved description, nothing else.`;
+      } else if (action === "expand") {
+        userPrompt = `Please expand on this problem description with more details. Add specific requirements, constraints, or context that would help someone understand the full scope:
+
+"${description}"
+
+Provide only the expanded description, nothing else.`;
+      } else if (action === "simplify") {
+        userPrompt = `Please simplify this problem description to its essential elements. Remove jargon and make it accessible to anyone:
+
+"${description}"
+
+Provide only the simplified description, nothing else.`;
+      } else if (action === "suggest") {
+        userPrompt = `Based on this problem description, suggest 3-5 questions the user should consider adding to make their submission more complete. Format as a bulleted list:
+
+"${description}"`;
+      } else {
+        userPrompt = `Help improve this problem description:
+
+"${description}"
+
+Provide only the improved description, nothing else.`;
+      }
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        max_completion_tokens: 1024,
+        temperature: 0.7,
+      });
+
+      const result = response.choices[0]?.message?.content || "";
+      res.json({ result });
+    } catch (error) {
+      console.error("AI assistant error:", error);
+      res.status(500).json({ error: "Failed to process with AI assistant" });
+    }
+  });
+
+  // Check if AI assistant is available
+  app.get("/api/ai/available", (req, res) => {
+    const isAvailable = !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL);
+    res.json({ available: isAvailable });
   });
 
   // ============ ADMIN ROUTES ============
