@@ -170,6 +170,12 @@ Submissions follow this status progression:
 - `POST /api/admin/heygen/create-avatar-video` - Create avatar video with specific settings (admin)
 - `POST /api/admin/heygen/create-talking-photo` - Create talking photo video (admin)
 
+### AI Submission Assistant
+- `GET /api/ai/available` - Check if AI assistant is configured
+- `POST /api/ai/improve-description` - Improve a problem description using AI
+  - Body: `{ description: string, action: "improve"|"expand"|"simplify"|"suggest" }`
+  - Returns: `{ result: string }` with AI-improved text
+
 ## Admin Configuration
 
 To grant admin access, add user IDs to the `ADMIN_USER_IDS` set in `server/routes.ts`:
