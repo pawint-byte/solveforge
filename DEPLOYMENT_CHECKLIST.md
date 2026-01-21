@@ -178,7 +178,8 @@ Use this checklist when building any new app to ensure all standard features are
 | `DATABASE_URL` | PostgreSQL connection | Yes (auto-provided by Replit) |
 | `SESSION_SECRET` | Session encryption | Yes |
 | `RESEND_API_KEY` | Email notifications | If email notifications |
-| `STRIPE_SECRET_KEY` | Stripe payments | If payments enabled |
+| `STRIPE_SECRET_KEY` | Stripe payments (sk_live_...) | If payments enabled |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe frontend (pk_live_...) | If payments enabled |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhooks | If payments enabled |
 | `BLUESKY_HANDLE` | Bluesky posting | If social sharing |
 | `BLUESKY_APP_PASSWORD` | Bluesky auth | If social sharing |
@@ -250,6 +251,43 @@ app.get("/api/email/available", async (req, res) => {
 - Go to resend.com/domains
 - Add pawint-app.com
 - Add DNS records in Squarespace
+
+### Stripe Production Fix
+
+**Problem:** App shows "Payment system not configured" (503 error) in production even though Stripe works in development.
+
+**Root Cause:** Replit's Stripe connector doesn't carry over to production. Use environment variables instead.
+
+**Step 1: Add Stripe Secrets**
+In Replit Secrets, add:
+- `STRIPE_SECRET_KEY` = your sk_live_... key
+- `STRIPE_PUBLISHABLE_KEY` = your pk_live_... key
+
+**Step 2: Update server/stripeClient.ts**
+Update `getCredentials()` to check env vars FIRST:
+
+```typescript
+async function getCredentials() {
+  // First, try environment variables (works in production)
+  const envPublishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+  const envSecretKey = process.env.STRIPE_SECRET_KEY;
+  
+  if (envPublishableKey && envSecretKey) {
+    console.log('Using Stripe credentials from environment variables');
+    return {
+      publishableKey: envPublishableKey,
+      secretKey: envSecretKey,
+    };
+  }
+
+  // Fall back to Replit connector (development)
+  // ... rest of existing connector code ...
+}
+```
+
+**Step 3: Republish the app**
+
+**Note:** Use the same pk_live_ and sk_live_ keys from "Wint Ent" Stripe account across all apps.
 
 ### manifest.json Template (public/manifest.json)
 
