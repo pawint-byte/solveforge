@@ -116,4 +116,114 @@ Data: replit-verify=abc123-xyz789...
 
 ---
 
+---
+
+## Standard App Requirements Template
+
+Use this checklist when building any new app to ensure all standard features are included.
+
+### SEO & Social Sharing Meta Tags (client/index.html)
+
+```html
+<!-- Basic SEO -->
+<title>[App Name] - [Tagline]</title>
+<meta name="description" content="[Brief description of what the app does]" />
+
+<!-- Open Graph (Facebook, LinkedIn, etc.) -->
+<meta property="og:title" content="[App Name] - [Tagline]" />
+<meta property="og:description" content="[Brief description]" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="[App Name]" />
+<meta property="og:image" content="[URL to preview image - 1200x630px recommended]" />
+<meta property="og:url" content="[Full URL like https://appname.pawint-app.com]" />
+
+<!-- Twitter/X Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="[App Name]" />
+<meta name="twitter:description" content="[Brief description]" />
+<meta name="twitter:image" content="[URL to preview image]" />
+```
+
+### PWA (Progressive Web App) Support
+
+```html
+<!-- Theme & Mobile App -->
+<meta name="theme-color" content="[Primary brand color hex]" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="[App Name]" />
+
+<!-- Icons & Manifest -->
+<link rel="icon" type="image/png" href="/favicon.png" />
+<link rel="apple-touch-icon" href="/favicon.png" />
+<link rel="manifest" href="/manifest.json" />
+```
+
+### Google Analytics 4
+
+```html
+<script async src="https://www.googletagmanager.com/gtag/js?id=[GA4-ID]"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '[GA4-ID]');
+</script>
+```
+
+### Required Environment Variables / Secrets
+
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `DATABASE_URL` | PostgreSQL connection | Yes (auto-provided by Replit) |
+| `SESSION_SECRET` | Session encryption | Yes |
+| `STRIPE_SECRET_KEY` | Stripe payments | If payments enabled |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhooks | If payments enabled |
+| `BLUESKY_HANDLE` | Bluesky posting | If social sharing |
+| `BLUESKY_APP_PASSWORD` | Bluesky auth | If social sharing |
+| `HEYGEN_API_KEY` | AI video generation | If video features |
+| `MAILCHIMP_API_KEY` | Newsletter | If email marketing |
+| `MAILCHIMP_LIST_ID` | Newsletter list | If email marketing |
+
+### manifest.json Template (public/manifest.json)
+
+```json
+{
+  "name": "[App Full Name]",
+  "short_name": "[App Name]",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "[Primary color hex]",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+```
+
+### Standard Integrations Checklist
+
+- [ ] **Replit Auth** - User login/signup
+- [ ] **PostgreSQL Database** - Data persistence  
+- [ ] **Stripe** - Payment processing (if needed)
+- [ ] **Favicon** - 192x192 PNG minimum
+- [ ] **OG Image** - 1200x630 preview image for social shares
+
+### Pre-Launch Verification
+
+- [ ] All meta tags filled with actual content (no placeholders)
+- [ ] Favicon uploaded and linked
+- [ ] OG image created and hosted
+- [ ] Test social share preview (use opengraph.xyz or similar)
+- [ ] Mobile responsive design verified
+- [ ] Dark mode support working
+- [ ] All environment secrets configured
+- [ ] Payment flow tested (if applicable)
+
+---
+
 *Last updated: January 2026*
