@@ -160,5 +160,20 @@
     "shareDesc": "Sauvegardez ou faites une capture d'écran de ce code QR et partagez-le sur les réseaux sociaux, par email, ou imprimez-le pour vos cartes de visite et flyers.",
     "instantTitle": "Accès Instantané",
     "instantDesc": "Pas besoin de taper des URLs - scanner vous amène directement à SolveForge où vous pouvez soumettre des problèmes et obtenir des solutions."
+  },
+  "paymentFaq": {
+    "badge": "Options de Paiement",
+    "title": "Comment Fonctionnent les Paiements",
+    "subtitle": "Nous offrons des options de paiement flexibles incluant cartes de crédit et cryptomonnaies",
+    "paymentMethodsTitle": "Quels modes de paiement acceptez-vous ?",
+    "paymentMethodsDesc": "Nous acceptons toutes les cartes de crédit principales (Visa, Mastercard, American Express) via Stripe. Nous acceptons également les paiements en cryptomonnaies incluant Bitcoin (BTC) et Ethereum (ETH) grâce au partenariat de Stripe avec Crypto.com.",
+    "cryptoTitle": "Comment fonctionnent les paiements crypto ?",
+    "cryptoDesc": "Lorsque vous payez en cryptomonnaie, le paiement est traité de manière sécurisée via l'intégration de Stripe avec Crypto.com. Sélectionnez simplement votre cryptomonnaie préférée lors du paiement et complétez la transaction depuis votre portefeuille.",
+    "milestonesTitle": "Comment sont structurés les paiements par étapes ?",
+    "milestonesDesc": "Les paiements sont divisés en trois étapes : 30% d'acompte pour démarrer, 40% à mi-parcours lorsque la solution est proposée, et 30% à la livraison finale. Cela vous protège et garantit un travail de qualité.",
+    "securityTitle": "Mes paiements sont-ils sécurisés ?",
+    "securityDesc": "Absolument. Tous les paiements sont traités par Stripe, un processeur de paiement certifié PCI auquel font confiance des millions d'entreprises dans le monde. Les détails de votre carte ne sont jamais stockés sur nos serveurs.",
+    "refundsTitle": "Quelle est votre politique de remboursement ?",
+    "refundsDesc": "Si le travail n'a pas commencé sur votre projet, vous pouvez demander un remboursement intégral de votre acompte. Une fois le travail commencé, les remboursements sont calculés au prorata du travail effectué. Contactez-nous pour discuter de votre situation spécifique."
   }
 }

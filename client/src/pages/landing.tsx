@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, Mail, BookOpen, QrCode, Smartphone, Share2, HelpCircle } from "lucide-react";
+import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, Mail, BookOpen, QrCode, Smartphone, Share2, HelpCircle, CreditCard, Bitcoin, Lock, RefreshCw, Layers } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { SocialShareButtons } from "@/components/social-share";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -360,6 +361,106 @@ export default function Landing() {
                 </Card>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Payment FAQ Section */}
+      <section className="py-20 px-6" data-testid="section-payment-faq">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <Badge variant="secondary" className="mb-4" data-testid="badge-payment-options">
+              <CreditCard className="w-3 h-3 mr-1" />
+              {t('paymentFaq.badge')}
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" data-testid="text-payment-faq-title">
+              {t('paymentFaq.title')}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('paymentFaq.subtitle')}
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card data-testid="card-faq-payment-methods">
+              <CardContent className="pt-6">
+                <div className="flex flex-col gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <CreditCard className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2">{t('paymentFaq.paymentMethodsTitle')}</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t('paymentFaq.paymentMethodsDesc')}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card data-testid="card-faq-crypto">
+              <CardContent className="pt-6">
+                <div className="flex flex-col gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                    <Bitcoin className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2">{t('paymentFaq.cryptoTitle')}</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t('paymentFaq.cryptoDesc')}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card data-testid="card-faq-milestones">
+              <CardContent className="pt-6">
+                <div className="flex flex-col gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                    <Layers className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2">{t('paymentFaq.milestonesTitle')}</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t('paymentFaq.milestonesDesc')}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card data-testid="card-faq-security">
+              <CardContent className="pt-6">
+                <div className="flex flex-col gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                    <Lock className="w-6 h-6 text-green-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2">{t('paymentFaq.securityTitle')}</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t('paymentFaq.securityDesc')}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card data-testid="card-faq-refunds">
+              <CardContent className="pt-6">
+                <div className="flex flex-col gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                    <RefreshCw className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2">{t('paymentFaq.refundsTitle')}</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t('paymentFaq.refundsDesc')}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

@@ -160,5 +160,20 @@
     "shareDesc": "Guarda o captura este código QR y compártelo en redes sociales, en correos, o imprímelo para tarjetas de presentación y volantes.",
     "instantTitle": "Acceso Instantáneo",
     "instantDesc": "No necesitas escribir URLs - escanear te lleva directamente a SolveForge donde puedes enviar problemas y obtener soluciones."
+  },
+  "paymentFaq": {
+    "badge": "Opciones de Pago",
+    "title": "Cómo Funcionan los Pagos",
+    "subtitle": "Ofrecemos opciones de pago flexibles incluyendo tarjetas de crédito y criptomonedas",
+    "paymentMethodsTitle": "¿Qué métodos de pago aceptan?",
+    "paymentMethodsDesc": "Aceptamos todas las tarjetas de crédito principales (Visa, Mastercard, American Express) a través de Stripe. También aceptamos pagos con criptomonedas incluyendo Bitcoin (BTC) y Ethereum (ETH) a través de la asociación de Stripe con Crypto.com.",
+    "cryptoTitle": "¿Cómo funcionan los pagos con cripto?",
+    "cryptoDesc": "Cuando pagas con criptomonedas, el pago se procesa de forma segura a través de la integración de Stripe con Crypto.com. Simplemente selecciona tu criptomoneda preferida al pagar y completa la transacción desde tu billetera.",
+    "milestonesTitle": "¿Cómo se estructuran los pagos por hitos?",
+    "milestonesDesc": "Los pagos se dividen en tres hitos: 30% de depósito para comenzar, 40% en el punto medio cuando se propone la solución, y 30% en la entrega final. Esto te protege y asegura un trabajo de calidad.",
+    "securityTitle": "¿Son seguros mis pagos?",
+    "securityDesc": "Absolutamente. Todos los pagos se procesan a través de Stripe, un procesador de pagos con certificación PCI en el que confían millones de empresas en todo el mundo. Los detalles de tu tarjeta nunca se almacenan en nuestros servidores.",
+    "refundsTitle": "¿Cuál es su política de reembolsos?",
+    "refundsDesc": "Si el trabajo no ha comenzado en tu proyecto, puedes solicitar un reembolso completo de tu depósito. Una vez que comienza el trabajo, los reembolsos se prorratean según el trabajo completado. Contáctanos para discutir tu situación específica."
   }
 }

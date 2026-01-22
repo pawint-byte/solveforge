@@ -289,6 +289,42 @@ async function getCredentials() {
 
 **Note:** Use the same pk_live_ and sk_live_ keys from "Wint Ent" Stripe account across all apps.
 
+### Cryptocurrency Payment Options
+
+**Current Setup:** Stripe-only approach with Crypto.com partnership
+
+**How to Enable Crypto via Stripe:**
+1. Log into [Stripe Dashboard](https://dashboard.stripe.com)
+2. Go to **Settings → Payment methods**
+3. Enable **Crypto.com** integration (when available in your region)
+4. Customers can pay with BTC, ETH, and other cryptocurrencies at checkout
+5. No additional code changes required - Stripe handles the conversion
+
+**Fallback: Coinbase Commerce (Backup Option)**
+
+If Stripe's crypto option is unavailable or fails, Coinbase Commerce is pre-configured as a backup:
+
+| Secret | Value |
+|--------|-------|
+| `COINBASE_COMMERCE_API_KEY` | 98b62b07-bf63-4434-acf0-d45224512566 |
+| `COINBASE_COMMERCE_WEBHOOK_SECRET` | 4d0c276d-20c8-4b17-9b7f-d0e35578e79c |
+
+**To Enable Coinbase Commerce:**
+1. In `server/routes.ts`, update the `/api/crypto/available` endpoint:
+   ```typescript
+   app.get("/api/crypto/available", async (req, res) => {
+     const { isCoinbaseCommerceConfigured } = await import("./coinbaseCommerce");
+     res.json({ available: isCoinbaseCommerceConfigured() });
+   });
+   ```
+2. The crypto button will automatically appear in the payment UI
+3. Both Stripe and Coinbase Commerce can run simultaneously
+
+**Customer FAQ:** The landing page includes a "How Payments Work" section explaining:
+- Accepted payment methods (cards + crypto)
+- Milestone payment structure (30/40/30)
+- Security and refund policies
+
 ### manifest.json Template (public/manifest.json)
 
 ```json

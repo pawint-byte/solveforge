@@ -160,5 +160,20 @@
     "shareDesc": "Save or screenshot this QR code and share it on social media, in emails, or print it for business cards and flyers.",
     "instantTitle": "Instant Access",
     "instantDesc": "No need to type URLs - scanning takes you directly to SolveForge where you can submit problems and get solutions."
+  },
+  "paymentFaq": {
+    "badge": "Payment Options",
+    "title": "How Payments Work",
+    "subtitle": "We offer flexible payment options including credit cards and cryptocurrency",
+    "paymentMethodsTitle": "What payment methods do you accept?",
+    "paymentMethodsDesc": "We accept all major credit cards (Visa, Mastercard, American Express) through Stripe. We also support cryptocurrency payments including Bitcoin (BTC) and Ethereum (ETH) through Stripe's Crypto.com partnership.",
+    "cryptoTitle": "How do crypto payments work?",
+    "cryptoDesc": "When you pay with cryptocurrency, the payment is processed securely through Stripe's integration with Crypto.com. Simply select your preferred crypto currency at checkout and complete the transaction from your wallet.",
+    "milestonesTitle": "How are milestone payments structured?",
+    "milestonesDesc": "Payments are split into three milestones: 30% deposit to start work, 40% at the midpoint when solution is proposed, and 30% upon final delivery. This protects both you and ensures quality work.",
+    "securityTitle": "Are my payments secure?",
+    "securityDesc": "Absolutely. All payments are processed through Stripe, a PCI-compliant payment processor trusted by millions of businesses worldwide. Your card details are never stored on our servers.",
+    "refundsTitle": "What is your refund policy?",
+    "refundsDesc": "If work has not started on your project, you may request a full refund of your deposit. Once work begins, refunds are prorated based on work completed. Contact us to discuss your specific situation."
   }
 }
