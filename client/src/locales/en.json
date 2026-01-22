@@ -147,5 +147,18 @@
     "en": "English",
     "es": "Español",
     "fr": "Français"
+  },
+  "qrCode": {
+    "badge": "Quick Access",
+    "title": "Scan & Share Instantly",
+    "subtitle": "Access SolveForge on any device or share with friends using our QR code",
+    "caption": "Scan with your phone camera to visit pawint-app.com",
+    "faqTitle": "How to Use the QR Code",
+    "openCameraTitle": "Open Your Camera",
+    "openCameraDesc": "On iPhone or Android, open your camera app and point it at the QR code. A link will appear - tap it to visit SolveForge.",
+    "shareTitle": "Share with Others",
+    "shareDesc": "Save or screenshot this QR code and share it on social media, in emails, or print it for business cards and flyers.",
+    "instantTitle": "Instant Access",
+    "instantDesc": "No need to type URLs - scanning takes you directly to SolveForge where you can submit problems and get solutions."
   }
 }

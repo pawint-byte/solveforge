@@ -277,13 +277,13 @@ export default function Landing() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
               <QrCode className="w-4 h-4" />
-              Quick Access
+              {t('qrCode.badge')}
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Scan & Share Instantly
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" data-testid="text-qr-title">
+              {t('qrCode.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Access SolveForge on any device or share with friends using our QR code
+              {t('qrCode.subtitle')}
             </p>
           </div>
           
@@ -299,60 +299,60 @@ export default function Landing() {
                 />
               </div>
               <p className="mt-4 text-sm text-muted-foreground text-center">
-                Scan with your phone camera to visit pawint-app.com
+                {t('qrCode.caption')}
               </p>
             </div>
             
             {/* FAQ */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold flex items-center gap-2">
+              <h3 className="text-xl font-semibold flex flex-wrap items-center gap-2" data-testid="text-qr-faq-title">
                 <HelpCircle className="w-5 h-5 text-primary" />
-                How to Use the QR Code
+                {t('qrCode.faqTitle')}
               </h3>
               
               <div className="space-y-4">
-                <Card>
+                <Card data-testid="card-qr-faq-camera">
                   <CardContent className="pt-6">
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-4">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <Smartphone className="w-5 h-5 text-primary" />
                       </div>
-                      <div>
-                        <h4 className="font-medium mb-1">Open Your Camera</h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium mb-1" data-testid="text-faq-open-camera">{t('qrCode.openCameraTitle')}</h4>
                         <p className="text-sm text-muted-foreground">
-                          On iPhone or Android, open your camera app and point it at the QR code. A link will appear - tap it to visit SolveForge.
+                          {t('qrCode.openCameraDesc')}
                         </p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 
-                <Card>
+                <Card data-testid="card-qr-faq-share">
                   <CardContent className="pt-6">
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-4">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <Share2 className="w-5 h-5 text-primary" />
                       </div>
-                      <div>
-                        <h4 className="font-medium mb-1">Share with Others</h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium mb-1" data-testid="text-faq-share">{t('qrCode.shareTitle')}</h4>
                         <p className="text-sm text-muted-foreground">
-                          Save or screenshot this QR code and share it on social media, in emails, or print it for business cards and flyers.
+                          {t('qrCode.shareDesc')}
                         </p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 
-                <Card>
+                <Card data-testid="card-qr-faq-instant">
                   <CardContent className="pt-6">
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-4">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <Zap className="w-5 h-5 text-primary" />
                       </div>
-                      <div>
-                        <h4 className="font-medium mb-1">Instant Access</h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium mb-1" data-testid="text-faq-instant">{t('qrCode.instantTitle')}</h4>
                         <p className="text-sm text-muted-foreground">
-                          No need to type URLs - scanning takes you directly to SolveForge where you can submit problems and get solutions.
+                          {t('qrCode.instantDesc')}
                         </p>
                       </div>
                     </div>
