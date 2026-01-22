@@ -564,13 +564,9 @@ Provide only the improved description, nothing else.`;
   });
 
   // Check if crypto payments are available
+  // Disabled: Using Stripe-only approach with Crypto.com partnership enabled in Stripe Dashboard
   app.get("/api/crypto/available", async (req, res) => {
-    try {
-      const { isCoinbaseCommerceConfigured } = await import("./coinbaseCommerce");
-      res.json({ available: isCoinbaseCommerceConfigured() });
-    } catch (error) {
-      res.json({ available: false });
-    }
+    res.json({ available: false });
   });
 
   // Get payments for a submission

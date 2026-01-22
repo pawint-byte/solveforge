@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, Zap, Clock, CheckCircle, AlertCircle, 
-  FileText, Send, Loader2, MessageSquare, CreditCard, Bitcoin, Puzzle,
+  FileText, Send, Loader2, MessageSquare, CreditCard, Puzzle,
   FileSignature, Eye, PenTool, AlertTriangle
 } from "lucide-react";
 import type { Submission, Message, Payment, SubmissionAddOn, Document } from "@shared/schema";
@@ -52,7 +52,7 @@ export default function SubmissionDetail() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
-  const [paymentLoading, setPaymentLoading] = useState<"card" | "crypto" | null>(null);
+  const [paymentLoading, setPaymentLoading] = useState<"card" | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [signDialogOpen, setSignDialogOpen] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -78,9 +78,7 @@ export default function SubmissionDetail() {
     enabled: !!submission,
   });
 
-  const { data: cryptoAvailable } = useQuery<{ available: boolean }>({
-    queryKey: ["/api/crypto/available"],
-  });
+  // Crypto payments handled via Stripe's Crypto.com partnership - enable in Stripe Dashboard
 
   const { data: submissionAddOns = [] } = useQuery<SubmissionAddOn[]>({
     queryKey: ["/api/submissions", id, "addons"],
@@ -119,21 +117,6 @@ export default function SubmissionDetail() {
     setPaymentLoading("card");
     try {
       const response = await apiRequest("POST", `/api/submissions/${id}/checkout`);
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      toast({ title: t('payments.error') || "Payment failed", variant: "destructive" });
-    } finally {
-      setPaymentLoading(null);
-    }
-  };
-
-  const handleCryptoPayment = async () => {
-    setPaymentLoading("crypto");
-    try {
-      const response = await apiRequest("POST", `/api/submissions/${id}/crypto-checkout`);
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url;
@@ -459,22 +442,7 @@ export default function SubmissionDetail() {
                     )}
                     {t('payments.payWithCard')}
                   </Button>
-                  {cryptoAvailable?.available && (
-                    <Button 
-                      onClick={handleCryptoPayment} 
-                      variant="outline"
-                      className="w-full gap-2" 
-                      disabled={paymentLoading !== null || (!contractStatus?.hasSignedContract && documents.some(d => d.type === "contract"))}
-                      data-testid="button-pay-crypto"
-                    >
-                      {paymentLoading === "crypto" ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Bitcoin className="w-4 h-4" />
-                      )}
-                      {t('payments.payWithCrypto')}
-                    </Button>
-                  )}
+                  {/* Crypto payments handled via Stripe's Crypto.com partnership - enable in Stripe Dashboard */}
                 </CardContent>
               </Card>
             )}
