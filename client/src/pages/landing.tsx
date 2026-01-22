@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, Mail, BookOpen } from "lucide-react";
+import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, Mail, BookOpen, QrCode, Smartphone, Share2, HelpCircle } from "lucide-react";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { SocialShareButtons } from "@/components/social-share";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import qrCodeImage from "@assets/qrcode.png";
 
 export default function Landing() {
   const { t } = useTranslation();
@@ -266,6 +267,99 @@ export default function Landing() {
                 </CardContent>
               </Card>
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* QR Code Section */}
+      <section className="py-20 px-6 bg-gradient-to-br from-primary/5 to-primary/10">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <QrCode className="w-4 h-4" />
+              Quick Access
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Scan & Share Instantly
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Access SolveForge on any device or share with friends using our QR code
+            </p>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* QR Code */}
+            <div className="flex flex-col items-center">
+              <div className="bg-card rounded-2xl p-8 shadow-lg border border-card-border">
+                <img 
+                  src={qrCodeImage} 
+                  alt="Scan to visit SolveForge" 
+                  className="w-64 h-64"
+                  data-testid="img-qr-code"
+                />
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground text-center">
+                Scan with your phone camera to visit pawint-app.com
+              </p>
+            </div>
+            
+            {/* FAQ */}
+            <div className="space-y-6">
+              <h3 className="text-xl font-semibold flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                How to Use the QR Code
+              </h3>
+              
+              <div className="space-y-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Smartphone className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-1">Open Your Camera</h4>
+                        <p className="text-sm text-muted-foreground">
+                          On iPhone or Android, open your camera app and point it at the QR code. A link will appear - tap it to visit SolveForge.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Share2 className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-1">Share with Others</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Save or screenshot this QR code and share it on social media, in emails, or print it for business cards and flyers.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Zap className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-1">Instant Access</h4>
+                        <p className="text-sm text-muted-foreground">
+                          No need to type URLs - scanning takes you directly to SolveForge where you can submit problems and get solutions.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>
