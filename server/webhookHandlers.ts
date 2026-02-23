@@ -12,23 +12,25 @@ export class WebhookHandlers {
       );
     }
 
-    const sync = await getStripeSync();
-    await sync.processWebhook(payload, signature);
-
-    // Parse the event to handle custom business logic
     try {
-      const stripe = await getUncachableStripeClient();
-      const event = stripe.webhooks.constructEvent(
-        payload,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET || ''
-      );
+      const sync = await getStripeSync();
+      await sync.processWebhook(payload, signature);
+    } catch (syncErr: any) {
+      console.log('Stripe sync webhook processing skipped:', syncErr.message);
+    }
 
-      await WebhookHandlers.handleEvent(event);
-    } catch (err) {
-      // If we can't construct event (missing secret), skip custom handling
-      // The sync.processWebhook already handled the core sync
-      console.log('Skipping custom webhook handling (webhook secret not configured)');
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (webhookSecret) {
+      try {
+        const stripe = await getUncachableStripeClient();
+        const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+        await WebhookHandlers.handleEvent(event);
+        console.log(`Webhook event processed: ${event.type}`);
+      } catch (err: any) {
+        console.log('Custom webhook handling error:', err.message);
+      }
+    } else {
+      console.log('STRIPE_WEBHOOK_SECRET not set - skipping custom event handling');
     }
   }
 
