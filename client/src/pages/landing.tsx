@@ -224,7 +224,7 @@ export default function Landing() {
                     <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    A unified crypto management platform for tracking wallets, cost basis, yield opportunities, and payments across multiple blockchains — with full self-custody.
+                    Get your money on the blockchain — earn 5–8% fixed yield on RLUSD, trade on native DEXs, pay anyone in seconds, and pass your crypto to heirs with a Legacy Plan. Your keys, your security level.
                   </p>
                 </CardContent>
               </Card>
