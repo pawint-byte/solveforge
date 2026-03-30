@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, Mail, BookOpen, QrCode, Smartphone, Share2, HelpCircle, CreditCard, Bitcoin, Lock, RefreshCw, Layers } from "lucide-react";
+import { Lightbulb, Clock, DollarSign, Shield, ArrowRight, Zap, MessageSquare, ExternalLink, Sparkles, Users, ShoppingBag, TrendingUp, Mail, BookOpen, QrCode, Smartphone, Share2, HelpCircle, CreditCard, Bitcoin, Lock, RefreshCw, Layers, Coins, Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { SocialShareButtons } from "@/components/social-share";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import qrCodeImage from "@assets/qrcode.png";
+import wintLogo from "@assets/N3A1k_1774885450173.jpg";
 
 export default function Landing() {
   const { t } = useTranslation();
@@ -17,10 +18,8 @@ export default function Landing() {
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <Zap className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold">SolveForge</span>
+            <img src={wintLogo} alt="Wint Enterprises, Inc." className="h-10 w-auto object-contain" />
+            <span className="text-xl font-bold">Wint Enterprises, Inc.</span>
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -36,12 +35,16 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+                <Shield className="w-4 h-4" />
+                Wint Enterprises, Inc.
+              </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                {t('hero.title1')} <span className="text-primary">{t('hero.problems')}</span> {t('hero.into')}{" "}
-                <span className="text-primary">{t('hero.solutions')}</span>
+                Empowering <span className="text-primary">Independence.</span>{" "}
+                Securing <span className="text-primary">Legacies.</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                {t('hero.subtitle')}
+                Enterprise-grade technology built for individuals — giving you real control over your financial future, personal legacy, and digital life.
               </p>
               <div className="flex flex-wrap gap-4">
                 <a href="/api/login">
@@ -148,16 +151,148 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Portfolio Section - Other Replit Apps */}
+      {/* Founder Bio Section */}
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+                <Users className="w-4 h-4" />
+                About the Founder
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold">Peter Wint</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                Peter Wint is the founder of Wint Enterprises and the creator of CryptoOwnBank, FamilyRoots, and SolveForge. With more than 25 years of enterprise IT and cybersecurity leadership — including senior roles at Lockheed Martin, IBM, Incyte Pharmaceuticals, AT&T, Raytheon, and Boeing — Peter has designed, deployed, and secured complex global infrastructures for government and Fortune 500 clients.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                He holds active CISSP and CompTIA Linux+ certifications, along with CCNA. His work is guided by a simple philosophy: technology should empower individuals, protect privacy, and give people real control over both their financial futures and personal legacies.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {["CISSP", "CompTIA Linux+", "CCNA", "25+ Years Enterprise IT"].map((cert) => (
+                  <span key={cert} className="text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground font-medium border border-border">
+                    {cert}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { icon: Shield, label: "Cybersecurity", desc: "25+ years securing enterprise infrastructure", color: "text-blue-500", bg: "bg-blue-500/10" },
+                { icon: Layers, label: "Architecture", desc: "Global systems for Fortune 500 & government", color: "text-indigo-500", bg: "bg-indigo-500/10" },
+                { icon: Coins, label: "Crypto", desc: "Multi-chain portfolio & self-custody expert", color: "text-amber-500", bg: "bg-amber-500/10" },
+                { icon: Sparkles, label: "Innovation", desc: "Turning enterprise expertise into user-first tools", color: "text-green-500", bg: "bg-green-500/10" },
+              ].map(({ icon: Icon, label, desc, color, bg }) => (
+                <Card key={label} className="hover-elevate">
+                  <CardContent className="pt-6 pb-6">
+                    <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center mb-3`}>
+                      <Icon className={`w-5 h-5 ${color}`} />
+                    </div>
+                    <h4 className="font-semibold mb-1">{label}</h4>
+                    <p className="text-xs text-muted-foreground">{desc}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio Section */}
+      <section className="py-20 px-6 bg-muted/30">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Portfolio</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Wint Enterprises Portfolio</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Check out other apps we've built to see our capabilities in action
+              A suite of user-first platforms built on enterprise-grade foundations
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a 
+              href="https://cryptoownbank.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-cryptoownbank"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
+                    <Coins className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    CryptoOwnBank
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A unified crypto management platform for tracking wallets, cost basis, yield opportunities, and payments across multiple blockchains — with full self-custody.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+            <a 
+              href="https://familyroots.family" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-familyroots"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
+                    <Heart className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    FamilyRoots
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A private, invitation-only family and group networking platform with interactive trees, AI-powered genealogy assistance, and collaboration tools.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+            <a 
+              href="https://paygatedating.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-paygate"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center mb-4">
+                    <Shield className="w-6 h-6 text-pink-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    Paygate Dating
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A dating platform with built-in payment verification to create a safer, more serious community of genuine connections.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+            <a 
+              href="/api/login"
+              className="block"
+              data-testid="link-portfolio-solveforge"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                    <Lightbulb className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    SolveForge
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A transparent crowdsourcing marketplace connecting real-world technical, business, and creative challenges with expert proposals and milestone-based payments.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
             <a 
               href="https://kinship-chronicle--pawint.replit.app" 
               target="_blank" 
@@ -167,8 +302,8 @@ export default function Landing() {
             >
               <Card className="h-full hover-elevate cursor-pointer group">
                 <CardContent className="pt-6 pb-6">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
-                    <Users className="w-6 h-6 text-purple-500" />
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+                    <Users className="w-6 h-6 text-blue-500" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
                     Kinship Chronicle
@@ -176,28 +311,6 @@ export default function Landing() {
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     A family tree and genealogy app to document and preserve your family history across generations.
-                  </p>
-                </CardContent>
-              </Card>
-            </a>
-            <a 
-              href="https://app-hub--pawint.replit.app" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block"
-              data-testid="link-portfolio-apphub"
-            >
-              <Card className="h-full hover-elevate cursor-pointer group">
-                <CardContent className="pt-6 pb-6">
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
-                    <Sparkles className="w-6 h-6 text-blue-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-                    App Hub
-                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    A centralized hub for discovering and accessing multiple applications from a single dashboard.
                   </p>
                 </CardContent>
               </Card>
@@ -264,6 +377,28 @@ export default function Landing() {
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     An interactive storytelling platform for creating and sharing engaging narratives and stories.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
+            <a 
+              href="https://app-hub--pawint.replit.app" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-portfolio-apphub"
+            >
+              <Card className="h-full hover-elevate cursor-pointer group">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-4">
+                    <Sparkles className="w-6 h-6 text-indigo-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                    App Hub
+                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    A centralized hub for discovering and accessing multiple applications from a single dashboard.
                   </p>
                 </CardContent>
               </Card>
@@ -496,7 +631,7 @@ export default function Landing() {
             <p className="text-sm text-muted-foreground mb-4">{t('cta.shareWith')}</p>
             <div className="flex justify-center">
               <SocialShareButtons 
-                title="SolveForge - Crowdsourcing Problem Solving" 
+                title="Wint Enterprises - Empowering Independence. Securing Legacies." 
                 type="app" 
               />
             </div>
@@ -508,8 +643,8 @@ export default function Landing() {
       <footer className="border-t border-border py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-primary" />
-            <span className="font-semibold">SolveForge</span>
+            <img src={wintLogo} alt="Wint Enterprises, Inc." className="h-7 w-auto object-contain" />
+            <span className="font-semibold">Wint Enterprises, Inc.</span>
           </div>
           <a 
             href="mailto:pawint@me.com" 
@@ -520,7 +655,7 @@ export default function Landing() {
             pawint@me.com
           </a>
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} SolveForge. {t('footer.copyright')}
+            &copy; {new Date().getFullYear()} Wint Enterprises, Inc. {t('footer.copyright')}
           </p>
         </div>
       </footer>
