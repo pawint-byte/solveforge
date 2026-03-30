@@ -162,10 +162,10 @@ export default function Landing() {
               </div>
               <h2 className="text-3xl md:text-4xl font-bold">Peter Wint</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Peter Wint is the founder of Wint Enterprises and the creator of CryptoOwnBank, FamilyRoots, and SolveForge. With more than 25 years of enterprise IT and cybersecurity leadership — including senior roles at Lockheed Martin, IBM, Incyte Pharmaceuticals, AT&T, Raytheon, and Boeing — Peter has designed, deployed, and secured complex global infrastructures for government and Fortune 500 clients.
+                Peter Wint is the founder of Wint Enterprises and the creator of nine platforms spanning finance, family, relationships, beauty, and productivity — including CryptoOwnBank, FamilyRoots, Kinship Chronicle, Paygate Dating, SolveForge, Glam Market, DCA Portfolio, Story Weaver, and App Hub. With more than 25 years of enterprise IT and cybersecurity leadership — including senior roles at Lockheed Martin, IBM, Incyte Pharmaceuticals, AT&T, Raytheon, and Boeing — Peter has designed, deployed, and secured complex global infrastructures for government and Fortune 500 clients.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                He holds active CISSP and CompTIA Linux+ certifications, along with CCNA. His work is guided by a simple philosophy: technology should empower individuals, protect privacy, and give people real control over both their financial futures and personal legacies.
+                He holds active CISSP and CompTIA Linux+ certifications, along with CCNA and Blockchain Essentials from Cornell University. His work is guided by a simple philosophy: technology should empower individuals, protect privacy, and give people real control over both their financial futures and personal legacies.
               </p>
               <div className="flex flex-wrap gap-3">
                 {["CISSP", "CompTIA Linux+", "CCNA", "25+ Years Enterprise IT"].map((cert) => (
