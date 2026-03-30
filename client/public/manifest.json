@@ -1,14 +1,14 @@
 {
-  "name": "SolveForge - Crowdsourcing Problem Solving",
-  "short_name": "SolveForge",
-  "description": "Submit your problems, ideas, or challenges and get expert solutions through crowdsourcing. Fast, reliable, and milestone-based payments.",
+  "name": "Wint Enterprises, Inc.",
+  "short_name": "Wint Ent.",
+  "description": "Enterprise-grade technology built for individuals — empowering independence and securing legacies across finance, family, relationships, beauty, and productivity.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "scope": "/",
-  "categories": ["business", "productivity", "utilities"],
+  "categories": ["business", "finance", "productivity", "lifestyle"],
   "lang": "en-US",
   "dir": "ltr",
   "icons": [
@@ -30,29 +30,36 @@
       "src": "/screenshots/dashboard.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "label": "User dashboard showing submission tracking"
+      "label": "Wint Enterprises portfolio of platforms"
     },
     {
       "src": "/screenshots/submit.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "label": "Problem submission form"
+      "label": "SolveForge problem submission"
     }
   ],
   "related_applications": [],
   "prefer_related_applications": false,
   "shortcuts": [
     {
-      "name": "Submit Problem",
+      "name": "Portfolio",
+      "short_name": "Portfolio",
+      "description": "View all Wint Enterprises platforms",
+      "url": "/",
+      "icons": [{ "src": "/favicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Submit a Problem",
       "short_name": "Submit",
-      "description": "Submit a new problem or challenge",
+      "description": "Submit a problem to SolveForge",
       "url": "/submit",
       "icons": [{ "src": "/favicon.png", "sizes": "192x192" }]
     },
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
-      "description": "View your submissions",
+      "description": "View your SolveForge submissions",
       "url": "/dashboard",
       "icons": [{ "src": "/favicon.png", "sizes": "192x192" }]
     }
