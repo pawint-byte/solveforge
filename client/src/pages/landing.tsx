@@ -8,6 +8,7 @@ import { SocialShareButtons } from "@/components/social-share";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import qrCodeImage from "@assets/qrcode.png";
 import wintLogo from "@assets/N3A1k_1774885450173.jpg";
+import founderPhoto from "@assets/4x25mxjh_1774888592999.png";
 
 export default function Landing() {
   const { t } = useTranslation();
@@ -160,7 +161,18 @@ export default function Landing() {
                 <Users className="w-4 h-4" />
                 About the Founder
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold">Peter Wint</h2>
+              <div className="flex items-center gap-5">
+                <img
+                  src={founderPhoto}
+                  alt="Peter Wint, Founder of Wint Enterprises"
+                  className="w-24 h-24 rounded-2xl object-cover object-top border-2 border-primary/20 shadow-md flex-shrink-0"
+                  data-testid="img-founder"
+                />
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold">Peter Wint</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Founder &amp; CEO, Wint Enterprises, Inc.</p>
+                </div>
+              </div>
               <p className="text-muted-foreground leading-relaxed">
                 Peter Wint is the founder of Wint Enterprises and the creator of nine platforms spanning finance, family, relationships, beauty, and productivity — including CryptoOwnBank, FamilyRoots, Kinship Chronicle, Paygate Dating, SolveForge, Glam Market, DCA Portfolio, Story Weaver, and App Hub. With more than 25 years of enterprise IT and cybersecurity leadership — including senior roles at Lockheed Martin, IBM, Incyte Pharmaceuticals, AT&T, Raytheon, and Boeing — Peter has designed, deployed, and secured complex global infrastructures for government and Fortune 500 clients.
               </p>
