@@ -252,12 +252,6 @@ export default function Landing() {
                     desc: 'A transparent crowdsourcing marketplace connecting real-world technical, business, and creative challenges with expert solutions and milestone-based payments.',
                   },
                   {
-                    href: 'https://kinship-chronicle--pawint.replit.app', testId: 'kinship',
-                    icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10',
-                    name: 'Kinship Chronicle',
-                    desc: 'Build private, invitation-only networks where every relationship is labeled and meaningful. Keep your circles secure and separate from public social media.',
-                  },
-                  {
                     href: 'https://glam-market--pawint.replit.app', testId: 'glammarket',
                     icon: ShoppingBag, color: 'text-pink-400', bg: 'bg-pink-400/10',
                     name: 'Glam Market',
@@ -330,7 +324,7 @@ export default function Landing() {
                     </div>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    Peter Wint is the founder of Wint Enterprises and the creator of nine platforms spanning finance, family, relationships, beauty, and productivity — including CryptoOwnBank, FamilyRoots, Kinship Chronicle, Paygate Dating, SolveForge, Glam Market, DCA Portfolio, Story Weaver, and App Hub. With more than 25 years of enterprise IT and cybersecurity leadership — including senior roles at Lockheed Martin, IBM, Incyte Pharmaceuticals, AT&T, Raytheon, and Boeing — Peter has designed, deployed, and secured complex global infrastructures for government and Fortune 500 clients.
+                    Peter Wint is the founder of Wint Enterprises and the creator of eight platforms spanning finance, family, relationships, beauty, and productivity — including CryptoOwnBank, FamilyRoots, Paygate Dating, SolveForge, Glam Market, DCA Portfolio, Story Weaver, and App Hub. With more than 25 years of enterprise IT and cybersecurity leadership — including senior roles at Lockheed Martin, IBM, Incyte Pharmaceuticals, AT&T, Raytheon, and Boeing — Peter has designed, deployed, and secured complex global infrastructures for government and Fortune 500 clients.
                   </p>
                   <p className="text-muted-foreground leading-relaxed">
                     He holds active CISSP and CompTIA Linux+ certifications, along with CCNA and Blockchain Essentials from Cornell University. His work is guided by a simple philosophy: technology should empower individuals, protect privacy, and give people real control over both their financial futures and personal legacies.

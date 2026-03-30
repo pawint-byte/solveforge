@@ -55,7 +55,7 @@
 
 ### Content & Portfolio
 - [ ] Update portfolio descriptions for remaining sites as content evolves
-- [ ] Clarify relationship between FamilyRoots and Kinship Chronicle (same codebase — may want to consolidate or differentiate)
+- [x] Kinship Chronicle confirmed same app as FamilyRoots — removed from portfolio and bio
 - [ ] DCA Portfolio app currently shows "Not Found" — confirm if still active or should be marked "Coming Soon"
 - [ ] Add actual product screenshots or preview images to portfolio cards (optional enhancement)
 
