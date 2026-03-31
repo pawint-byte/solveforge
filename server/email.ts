@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const ADMIN_EMAIL = 'peter@wintenterprises.com';
-const FROM_EMAIL = 'notifications@pawint-app.com';
+const FROM_EMAIL = 'notifications@wintenterprises.com';
 
 export async function isEmailAvailable(): Promise<boolean> {
   return !!resend;

@@ -52,7 +52,7 @@
 - [x] Created @wintenterprises.com mailboxes: peter@, peterjr@, notifications@
 - [x] Updated site footer contact email to `peter@wintenterprises.com`
 - [x] Updated admin notification recipient to `peter@wintenterprises.com`
-- [ ] Update transactional FROM address from `notifications@pawint-app.com` → `notifications@wintenterprises.com` (requires adding wintenterprises.com as verified sending domain in Resend dashboard first)
+- [x] Updated transactional FROM address to `notifications@wintenterprises.com` — Resend domain verified ✅
 
 ### Content & Portfolio
 - [ ] Update portfolio descriptions for remaining sites as content evolves
