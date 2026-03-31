@@ -41,8 +41,8 @@
 
 ## ⏳ In Progress / Waiting
 
-- [ ] **wintenterprises.com DNS propagation** — domain purchased, waiting up to 24–48hrs to fully resolve
-- [ ] **Google Workspace email verification** — TXT record added, retry verification tonight or tomorrow at admin.google.com
+- [x] **wintenterprises.com DNS propagation** — domain is live ✅
+- [x] **Google Workspace email verification** — verified via CNAME, Gmail activated ✅
 
 ---
 
