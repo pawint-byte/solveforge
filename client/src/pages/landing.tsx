@@ -304,13 +304,20 @@ export default function Landing() {
 
           {/* ════ ABOUT ════ */}
           {active === 'about' && (
-            <div className="p-6 lg:p-10 max-w-5xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-10 items-start">
+            <div className="p-6 lg:p-10 max-w-5xl mx-auto space-y-10">
+
+              {/* Section header */}
+              <div>
+                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-2">
+                  <Users className="w-4 h-4" />
+                  Leadership
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold">The Team Behind Wint Enterprises</h2>
+              </div>
+
+              {/* Peter Sr. */}
+              <div className="grid lg:grid-cols-2 gap-10 items-start border-b border-border pb-10">
                 <div className="space-y-5">
-                  <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-                    <Users className="w-4 h-4" />
-                    About the Founder
-                  </div>
                   <div className="flex items-center gap-4">
                     <img
                       src={founderPhoto}
@@ -319,14 +326,17 @@ export default function Landing() {
                       data-testid="img-founder"
                     />
                     <div>
-                      <h2 className="text-2xl md:text-3xl font-bold">Peter Wint</h2>
-                      <p className="text-sm text-muted-foreground mt-1">Founder &amp; CEO, Wint Enterprises, Inc.</p>
+                      <h3 className="text-xl md:text-2xl font-bold">Peter Wint</h3>
+                      <p className="text-sm text-primary font-medium mt-0.5">Founder &amp; CEO</p>
+                      <a href="mailto:peter@wintenterprises.com" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                        peter@wintenterprises.com
+                      </a>
                     </div>
                   </div>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     Peter Wint is the founder of Wint Enterprises and the creator of eight platforms spanning finance, family, relationships, beauty, and productivity — including CryptoOwnBank, FamilyRoots, Paygate Dating, SolveForge, Glam Market, DCA Portfolio, Story Weaver, and App Hub. With more than 25 years of enterprise IT and cybersecurity leadership — including senior roles at Lockheed Martin, IBM, Incyte Pharmaceuticals, AT&T, Raytheon, and Boeing — Peter has designed, deployed, and secured complex global infrastructures for government and Fortune 500 clients.
                   </p>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     He holds active CISSP and CompTIA Linux+ certifications, along with CCNA and Blockchain Essentials from Cornell University. His work is guided by a simple philosophy: technology should empower individuals, protect privacy, and give people real control over both their financial futures and personal legacies.
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -356,6 +366,56 @@ export default function Landing() {
                   ))}
                 </div>
               </div>
+
+              {/* Peter Jr. */}
+              <div className="grid lg:grid-cols-2 gap-10 items-start">
+                <div className="space-y-5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-2xl bg-purple-500/10 border-2 border-purple-500/20 flex items-center justify-center shrink-0 shadow-md">
+                      <Users className="w-8 h-8 text-purple-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl md:text-2xl font-bold">Peter Wint Jr.</h3>
+                      <p className="text-sm text-purple-500 font-medium mt-0.5">Co-Founder</p>
+                      <a href="mailto:peterjr@wintenterprises.com" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                        peterjr@wintenterprises.com
+                      </a>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
+                    Peter Wint Jr. is Co-Founder of Wint Enterprises and leads the FamilyRoots and Glam Market product lines. A high school student with a natural instinct for design, community, and consumer products, Peter Jr. brings a fresh generational perspective to the Wint Enterprises portfolio — helping shape platforms built around real human connection and curated experiences.
+                  </p>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
+                    His leadership of FamilyRoots — the private, invitation-only family and group networking platform — and Glam Market — the curated beauty marketplace for independent sellers — reflects his focus on products that bring people together and celebrate individuality.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {["FamilyRoots", "Glam Market", "Product Strategy", "Next-Gen Tech"].map((tag) => (
+                      <span key={tag} className="text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground font-medium border border-border">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { icon: Heart, label: "FamilyRoots", desc: "Private, invitation-only family & group networks", color: "text-purple-500", bg: "bg-purple-500/10" },
+                    { icon: ShoppingBag, label: "Glam Market", desc: "Curated beauty marketplace for independent sellers", color: "text-pink-400", bg: "bg-pink-400/10" },
+                    { icon: Users, label: "Community", desc: "Building platforms centered on real connection", color: "text-blue-500", bg: "bg-blue-500/10" },
+                    { icon: Sparkles, label: "Vision", desc: "Next-generation perspective on consumer products", color: "text-green-500", bg: "bg-green-500/10" },
+                  ].map(({ icon: Icon, label, desc, color, bg }) => (
+                    <Card key={label} className="hover-elevate">
+                      <CardContent className="pt-5 pb-5">
+                        <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center mb-3`}>
+                          <Icon className={`w-5 h-5 ${color}`} />
+                        </div>
+                        <h4 className="font-semibold mb-1 text-sm">{label}</h4>
+                        <p className="text-xs text-muted-foreground">{desc}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
             </div>
           )}
 
