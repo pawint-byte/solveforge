@@ -9,6 +9,9 @@
 - [x] Add founder bio section — Peter Wint photo, credentials, background
 - [x] Update bio to list all 9 platforms
 - [x] Add Cornell Blockchain Essentials credential to bio
+- [x] Add Peter Wint Jr. as Co-Founder in the About/Leadership section
+- [x] Updated email sender name from "SolveForge" to "Wint Enterprises"
+- [x] Admin notifications now go to both peter@ and peterjr@wintenterprises.com
 
 ### Portfolio
 - [x] Expand portfolio from 3 to 9 products with accurate descriptions
