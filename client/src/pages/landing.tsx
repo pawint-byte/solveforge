@@ -99,12 +99,12 @@ export default function Landing() {
           {/* Sidebar footer */}
           <div className="mt-auto p-4 border-t border-border">
             <a
-              href="mailto:pawint@me.com"
+              href="mailto:peter@wintenterprises.com"
               className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
               data-testid="link-email-sidebar"
             >
               <Mail className="w-3 h-3" />
-              pawint@me.com
+              peter@wintenterprises.com
             </a>
             <p className="text-xs text-muted-foreground mt-2">
               &copy; {new Date().getFullYear()} Wint Enterprises, Inc.
@@ -462,12 +462,12 @@ export default function Landing() {
                 <img src={wintLogo} alt="Wint Enterprises, Inc." className="h-10 w-auto object-contain mx-auto mb-3" />
                 <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Wint Enterprises, Inc. {t('footer.copyright')}</p>
                 <a
-                  href="mailto:pawint@me.com"
+                  href="mailto:peter@wintenterprises.com"
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mt-2"
                   data-testid="link-email-contact"
                 >
                   <Mail className="w-4 h-4" />
-                  pawint@me.com
+                  peter@wintenterprises.com
                 </a>
               </div>
             </div>

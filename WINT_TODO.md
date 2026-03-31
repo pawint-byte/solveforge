@@ -49,9 +49,10 @@
 ## 📋 To Do
 
 ### Email
-- [ ] Once Google verifies domain, create @wintenterprises.com mailboxes in Google Workspace admin
-- [ ] Update contact email in site footer from `pawint@me.com` → `peter@wintenterprises.com` (or preferred address)
-- [ ] Update transactional email FROM address from `notifications@pawint-app.com` → `notifications@wintenterprises.com` (after domain verifies)
+- [x] Created @wintenterprises.com mailboxes: peter@, peterjr@, notifications@
+- [x] Updated site footer contact email to `peter@wintenterprises.com`
+- [x] Updated admin notification recipient to `peter@wintenterprises.com`
+- [ ] Update transactional FROM address from `notifications@pawint-app.com` → `notifications@wintenterprises.com` (requires adding wintenterprises.com as verified sending domain in Resend dashboard first)
 
 ### Content & Portfolio
 - [ ] Update portfolio descriptions for remaining sites as content evolves
