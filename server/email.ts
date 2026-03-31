@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const ADMIN_EMAIL = 'peter@wintenterprises.com';
+const ADMIN_EMAILS = ['peter@wintenterprises.com', 'peterjr@wintenterprises.com'];
 const FROM_EMAIL = 'notifications@wintenterprises.com';
 
 export async function isEmailAvailable(): Promise<boolean> {
@@ -26,8 +26,8 @@ export async function sendAdminNewSubmissionNotification(submission: {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: `SolveForge <${FROM_EMAIL}>`,
-      to: [ADMIN_EMAIL],
+      from: `Wint Enterprises <${FROM_EMAIL}>`,
+      to: ADMIN_EMAILS,
       subject: `🆕 New Submission: ${submission.title}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -97,7 +97,7 @@ export async function sendUserSubmissionConfirmation(userEmail: string, submissi
 
   try {
     const { data, error } = await resend.emails.send({
-      from: `SolveForge <${FROM_EMAIL}>`,
+      from: `Wint Enterprises <${FROM_EMAIL}>`,
       to: [userEmail],
       subject: `✅ Submission Received: ${submission.title}`,
       html: `
@@ -169,7 +169,7 @@ export async function sendStatusUpdateNotification(userEmail: string, submission
 
   try {
     const { data, error } = await resend.emails.send({
-      from: `SolveForge <${FROM_EMAIL}>`,
+      from: `Wint Enterprises <${FROM_EMAIL}>`,
       to: [userEmail],
       subject: `📋 Status Update: ${submission.title}`,
       html: `
