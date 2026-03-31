@@ -64,13 +64,15 @@
 - [ ] Add actual product screenshots or preview images to portfolio cards (optional enhancement)
 
 ### Branding
-- [ ] Replace browser favicon with Wint Enterprises logo (currently still default)
-- [ ] Consider adding a 512×512 Wint Enterprises icon for PWA installs
+- [x] Replace browser favicon with Wint Enterprises logo ✅
+- [x] Added 192×192 and 512×512 Wint Enterprises icons for PWA installs ✅
 
 ### Stripe
-- [ ] Manually configure Stripe webhook URL in Stripe Dashboard (cannot be automated)
+- [x] Manually configured Stripe webhook in Stripe Dashboard ✅
   - URL: https://wintenterprises.com/api/stripe/webhook
-  - Events: payment_intent.succeeded, checkout.session.completed, etc.
+  - Name: wintenterprises-production
+  - Events: checkout.session.completed, payment_intent.succeeded, payment_intent.payment_failed
+  - STRIPE_WEBHOOK_SECRET updated in Replit secrets
 
 ### Future Enhancements
 - [ ] Add individual sub-pages for each portfolio product (deeper SEO, dedicated landing)
