@@ -375,8 +375,8 @@ export default function Landing() {
                     <img
                       src={peterJrPhoto}
                       alt="Peter Wint Jr., Co-Founder of Wint Enterprises"
-                      className="w-20 h-20 rounded-2xl object-cover border-2 border-purple-500/20 shadow-md shrink-0"
-                      style={{ objectPosition: '50% 15%' }}
+                      className="w-28 h-36 rounded-2xl object-cover border-2 border-purple-500/20 shadow-md shrink-0"
+                      style={{ objectPosition: '50% 10%' }}
                       data-testid="img-peterjr"
                     />
                     <div>
