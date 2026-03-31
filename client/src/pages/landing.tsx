@@ -15,6 +15,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import qrCodeImage from "@assets/qrcode.png";
 import wintLogo from "@assets/N3A1k_1774885450173.jpg";
 import founderPhoto from "@assets/4x25mxjh_1774888592999.png";
+import peterJrPhoto from "@assets/IMG_2913_1774990659457.jpeg";
 
 type Section = 'home' | 'portfolio' | 'about' | 'solveforge' | 'newsletter';
 
@@ -371,9 +372,12 @@ export default function Landing() {
               <div className="grid lg:grid-cols-2 gap-10 items-start">
                 <div className="space-y-5">
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-2xl bg-purple-500/10 border-2 border-purple-500/20 flex items-center justify-center shrink-0 shadow-md">
-                      <Users className="w-8 h-8 text-purple-500" />
-                    </div>
+                    <img
+                      src={peterJrPhoto}
+                      alt="Peter Wint Jr., Co-Founder of Wint Enterprises"
+                      className="w-20 h-20 rounded-2xl object-cover object-top border-2 border-purple-500/20 shadow-md shrink-0"
+                      data-testid="img-peterjr"
+                    />
                     <div>
                       <h3 className="text-xl md:text-2xl font-bold">Peter Wint Jr.</h3>
                       <p className="text-sm text-purple-500 font-medium mt-0.5">Co-Founder</p>
