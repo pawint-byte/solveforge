@@ -15,7 +15,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import qrCodeImage from "@assets/qrcode.png";
 import wintLogo from "@assets/N3A1k_1774885450173.jpg";
 import founderPhoto from "@assets/4x25mxjh_1774888592999.png";
-import peterJrPhoto from "@assets/IMG_2913_1774990659457.jpeg";
+import peterJrPhoto from "@assets/image_1774999728523.png";
 
 type Section = 'home' | 'portfolio' | 'about' | 'solveforge' | 'newsletter';
 
@@ -376,7 +376,7 @@ export default function Landing() {
                       src={peterJrPhoto}
                       alt="Peter Wint Jr., Co-Founder of Wint Enterprises"
                       className="w-20 h-20 rounded-2xl object-cover border-2 border-purple-500/20 shadow-md shrink-0"
-                      style={{ objectPosition: '50% 30%' }}
+                      style={{ objectPosition: '50% 15%' }}
                       data-testid="img-peterjr"
                     />
                     <div>
