@@ -76,6 +76,7 @@
 
 ### Future Enhancements
 - [ ] Add individual sub-pages for each portfolio product (deeper SEO, dedicated landing)
-- [ ] Set up Google Search Console for wintenterprises.com (submit sitemap after DNS resolves)
-- [ ] Add sitemap.xml for SEO crawling
+- [ ] Set up Google Search Console for wintenterprises.com — add property and submit sitemap
+- [x] Add sitemap.xml at https://wintenterprises.com/sitemap.xml ✅
+- [x] Add robots.txt at https://wintenterprises.com/robots.txt ✅
 - [ ] ShareASale affiliate integration (hooks already in codebase, needs merchant ID)
